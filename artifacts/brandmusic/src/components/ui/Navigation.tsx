@@ -31,6 +31,7 @@ export default function Navigation() {
             <Link href="/features" className="text-white/70 hover:text-white transition-colors">
               Features
             </Link>
+            {/* --- Disabled nav links (uncomment to re-enable) ---
             <Link href="/pricing" className="text-white/70 hover:text-white transition-colors">
               Pricing
             </Link>
@@ -40,9 +41,11 @@ export default function Navigation() {
             <Link href="/enterprise" className="text-white/70 hover:text-white transition-colors">
               For Enterprise
             </Link>
+            */}
           </div>
 
           <div className="hidden md:flex items-center gap-4">
+            {/* --- Disabled auth links (uncomment to re-enable) ---
             {user ? (
               <>
                 <Link href="/profile" className="text-white/70 hover:text-white transition-colors">
@@ -64,6 +67,10 @@ export default function Navigation() {
                 </Link>
               </>
             )}
+            */}
+            <Link href="/library">
+              <Button>Browse Music</Button>
+            </Link>
           </div>
 
           <button
@@ -93,6 +100,7 @@ export default function Navigation() {
             >
               Features
             </Link>
+            {/* --- Disabled mobile nav links (uncomment to re-enable) ---
             <Link
               href="/pricing"
               className="block text-white/70 hover:text-white transition-colors py-2"
@@ -114,7 +122,9 @@ export default function Navigation() {
             >
               For Enterprise
             </Link>
+            */}
             <div className="pt-4 border-t border-white/5 space-y-3">
+              {/* --- Disabled mobile auth links (uncomment to re-enable) ---
               {user ? (
                 <>
                   <Link href="/profile" onClick={() => setIsOpen(false)}>
@@ -138,6 +148,10 @@ export default function Navigation() {
                   </Link>
                 </>
               )}
+              */}
+              <Link href="/library" onClick={() => setIsOpen(false)}>
+                <Button className="w-full">Browse Music</Button>
+              </Link>
             </div>
           </div>
         </div>
