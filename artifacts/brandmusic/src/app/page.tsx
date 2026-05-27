@@ -6,7 +6,6 @@ import {
   Waves,
   Layers,
   Users,
-  Play,
   Check,
   Plus,
   Minus,
@@ -172,7 +171,6 @@ function Faq() {
 }
 
 export default function Home() {
-  const featured = mockTracks.slice(0, 4)
 
   return (
     <main className="min-h-screen bg-[var(--color-background)] text-[var(--color-text-primary)]">
@@ -290,70 +288,6 @@ export default function Home() {
                 <p className="text-[13.5px] text-[var(--color-text-secondary)] leading-relaxed">
                   {s.body}
                 </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Featured tracks */}
-      <section className="py-20 border-t border-[var(--color-border-subtle)]">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex items-end justify-between mb-10">
-            <div>
-              <span className="mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-accent)]">
-                From the library
-              </span>
-              <h2 className="h-display text-[32px] md:text-[40px] mt-3">
-                Hand-picked this week.
-              </h2>
-            </div>
-            <Link href="/library" className="hidden sm:inline-flex">
-              <Button size="sm" variant="ghost">
-                Browse all
-                <ArrowRight className="ml-1.5 w-3.5 h-3.5" />
-              </Button>
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {featured.map((t) => (
-              <div
-                key={t.id}
-                className="group rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] overflow-hidden hover:border-[var(--color-border-default)] transition-colors"
-              >
-                <div className="relative aspect-square">
-                  <img
-                    src={t.cover_url}
-                    alt={t.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <button
-                    type="button"
-                    aria-label={`Play ${t.title}`}
-                    className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent-ring)] transition-opacity"
-                  >
-                    <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center">
-                      <Play className="w-4 h-4 text-white" />
-                    </div>
-                  </button>
-                </div>
-                <div className="p-4">
-                  <div className="text-[13.5px] text-[var(--color-text-primary)] truncate">
-                    {t.title}
-                  </div>
-                  <div className="text-[12px] text-[var(--color-text-tertiary)] truncate">
-                    {t.artist}
-                  </div>
-                  <div className="mt-3 flex items-center justify-between">
-                    <span className="mono text-[11px] text-[var(--color-text-tertiary)]">
-                      {t.bpm} BPM
-                    </span>
-                    <span className="mono text-[11px] text-[var(--color-text-tertiary)]">
-                      {t.key}
-                    </span>
-                  </div>
-                </div>
               </div>
             ))}
           </div>
