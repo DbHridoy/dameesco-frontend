@@ -25,12 +25,6 @@ export default function Navigation() {
             >
               Browse Music
             </Link>
-            <Link
-              href="/features"
-              className="text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
-            >
-              Features
-            </Link>
             {/* --- Disabled nav links (uncomment to re-enable) ---
             <Link href="/pricing" className="text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">Pricing</Link>
             <Link href="/services" className="text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">Services</Link>
@@ -61,13 +55,6 @@ export default function Navigation() {
               onClick={() => setIsOpen(false)}
             >
               Browse Music
-            </Link>
-            <Link
-              href="/features"
-              className="block py-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Features
             </Link>
             {/* --- Disabled mobile nav links (uncomment to re-enable) ---
             <Link href="/pricing" className="block py-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors" onClick={() => setIsOpen(false)}>Pricing</Link>

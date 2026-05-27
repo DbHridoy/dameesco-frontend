@@ -3,7 +3,6 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import "@/app/globals.css";
 
 import HomePage from "@/app/page";
-import FeaturesPage from "@/app/features/page";
 import LibraryPage from "@/app/library/page";
 
 // --- Disabled pages (uncomment imports + routes below to re-enable) ---
@@ -29,7 +28,6 @@ import NotFound from "@/pages/not-found";
 function AppRoutes() {
   return (
     <Switch>
-      <Route path="/features" component={FeaturesPage} />
       <Route path="/library" component={LibraryPage} />
       <Route path="/" component={HomePage} />
 

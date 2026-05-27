@@ -9,6 +9,8 @@ import {
   Check,
   Plus,
   Minus,
+  Video,
+  Sliders,
 } from 'lucide-react'
 import Navigation from '@/components/ui/Navigation'
 import Footer from '@/components/ui/Footer'
@@ -72,8 +74,8 @@ const plans = [
       'Stems on every track',
       'Shared team shortlists',
     ],
-    cta: 'See features',
-    href: '/features',
+    cta: 'Browse the library',
+    href: '/library',
     featured: true,
   },
   {
@@ -87,8 +89,8 @@ const plans = [
       'Sonic branding workshops',
       'Dedicated account team',
     ],
-    cta: 'Contact sales',
-    href: '/features',
+    cta: 'Browse the library',
+    href: '/library',
     featured: false,
   },
 ]
@@ -192,9 +194,6 @@ export default function Home() {
             <Link href="/library">
               <Button size="md">Browse the library</Button>
             </Link>
-            <Link href="/features">
-              <Button size="md" variant="outline">See features</Button>
-            </Link>
           </div>
         </div>
       </section>
@@ -273,6 +272,121 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Detailed features */}
+      <section className="py-20 border-t border-[var(--color-border-subtle)]">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="max-w-2xl mb-14">
+            <span className="mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-accent)]">
+              Features
+            </span>
+            <h2 className="h-display text-[32px] md:text-[40px] mt-3">
+              Built for agency workflows.
+            </h2>
+            <p className="mt-4 text-[15px] text-[var(--color-text-secondary)] leading-relaxed">
+              Tools designed for creative directors, producers, and brand teams who need precision, speed, and clean licensing.
+            </p>
+          </div>
+
+          <div className="space-y-20">
+            {[
+              {
+                icon: Search,
+                eyebrow: 'AI Discovery',
+                title: 'Conversational AI Search',
+                description:
+                  'Our model understands briefs like "confident but not aggressive" or "warm, nostalgic, with forward momentum." Describe what you need; skip the scrolling.',
+                bullets: [
+                  'Natural-language queries',
+                  'Context-aware recommendations',
+                  'Search by mood, genre, or use case',
+                  'Learns your preferences over time',
+                ],
+                image:
+                  'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&h=900&fit=crop',
+              },
+              {
+                icon: Video,
+                eyebrow: 'Video Sync',
+                title: 'Free Video Sync Preview',
+                description:
+                  'Upload an edit and hear options synced against your footage — before you license. Present shortlists to clients and get approvals faster.',
+                bullets: [
+                  'Drag-and-drop upload',
+                  'Real-time audio sync',
+                  'Local-only processing',
+                  'Export preview videos',
+                ],
+                image:
+                  'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=1200&h=900&fit=crop',
+              },
+              {
+                icon: Sliders,
+                eyebrow: 'Stems',
+                title: 'Professional Stem Access',
+                description:
+                  'Every track ships with separated stems (drums, bass, melody, vocals). Give your post team full control over the final mix.',
+                bullets: [
+                  'Isolated instrument tracks',
+                  'Adjust levels independently',
+                  'Remove or emphasize elements',
+                  'Consistent across releases',
+                ],
+                image:
+                  'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=1200&h=900&fit=crop',
+              },
+            ].map((f, idx) => {
+              const reverse = idx % 2 === 1
+              return (
+                <div
+                  key={f.title}
+                  className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center"
+                >
+                  <div className={reverse ? 'lg:order-2' : ''}>
+                    <div className="flex items-center gap-3 mb-5">
+                      <div className="w-9 h-9 rounded-md border border-[var(--color-border-default)] bg-[var(--color-surface)] flex items-center justify-center">
+                        <f.icon className="w-4 h-4 text-[var(--color-accent)]" />
+                      </div>
+                      <span className="mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-text-tertiary)]">
+                        {f.eyebrow} · {String(idx + 1).padStart(2, '0')}
+                      </span>
+                    </div>
+                    <h3 className="h-display text-[26px] md:text-[32px] mb-4">
+                      {f.title}
+                    </h3>
+                    <p className="text-[15px] text-[var(--color-text-secondary)] leading-relaxed mb-6">
+                      {f.description}
+                    </p>
+                    <ul className="space-y-2.5">
+                      {f.bullets.map((b) => (
+                        <li
+                          key={b}
+                          className="flex items-start gap-2.5 text-[13.5px] text-[var(--color-text-secondary)]"
+                        >
+                          <span className="mt-1.5 w-1 h-1 rounded-full bg-[var(--color-accent)] flex-shrink-0" />
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className={reverse ? 'lg:order-1' : ''}>
+                    <div className="rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] p-1.5">
+                      <div className="aspect-[4/3] rounded-md overflow-hidden border border-[var(--color-border-subtle)] bg-[var(--color-background)]">
+                        <img
+                          src={f.image}
+                          alt=""
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* Built for teams */}
       <section className="py-20 border-t border-[var(--color-border-subtle)]">
         <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
@@ -287,14 +401,8 @@ export default function Home() {
               Stems on every track. Video sync before licensing. Shared shortlists for stakeholders. Clear, single‑seat pricing — no surprise fees.
             </p>
             <div className="mt-7 flex items-center gap-3">
-              <Link href="/features">
-                <Button size="md">Explore features</Button>
-              </Link>
               <Link href="/library">
-                <Button size="md" variant="ghost">
-                  Browse music
-                  <ArrowRight className="ml-1.5 w-3.5 h-3.5" />
-                </Button>
+                <Button size="md">Browse music</Button>
               </Link>
             </div>
           </div>
