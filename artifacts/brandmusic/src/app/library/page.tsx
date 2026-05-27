@@ -229,16 +229,13 @@ export default function LibraryPage() {
                 <Video className="w-4 h-4 text-[var(--color-accent)]" />
               </div>
               <div>
-                <div className="flex items-center gap-2 mb-1">
+                <div className="mb-1">
                   <span className="text-[14px] font-medium text-[var(--color-text-primary)]">
                     Video Sync Tool
                   </span>
-                  <span className="mono text-[10px] uppercase tracking-[0.18em] text-[var(--color-accent)]">
-                    Free
-                  </span>
                 </div>
                 <p className="text-[13px] text-[var(--color-text-secondary)]">
-                  Preview any track against your footage — before you license.
+                  Preview tracks against your footage
                 </p>
               </div>
             </div>
