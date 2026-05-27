@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Link } from 'wouter'
-import Button from './Button'
 import { Menu, X } from 'lucide-react'
 
 export default function Navigation() {
@@ -37,9 +36,6 @@ export default function Navigation() {
             <Link href="/services" className="text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">Services</Link>
             <Link href="/enterprise" className="text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">For Enterprise</Link>
             */}
-          </div>
-
-          <div className="hidden md:flex items-center gap-2">
             {/* --- Disabled auth links (uncomment to re-enable) ---
             <Link href="/login"><Button variant="ghost" size="sm">Log in</Button></Link>
             <Link href="/signup"><Button size="sm">Start Free</Button></Link>
