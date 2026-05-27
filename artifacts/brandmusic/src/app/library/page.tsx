@@ -9,7 +9,6 @@ import {
   Heart,
   Video,
   ArrowRight,
-  Sparkles,
   Upload,
   X,
   Check,
@@ -104,7 +103,6 @@ export default function LibraryPage() {
     return matchesSearch && matchesMood && matchesGenre && matchesFavorites
   })
 
-  const newReleases = mockTracks.slice(0, Math.min(4, mockTracks.length))
 
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -293,62 +291,6 @@ export default function LibraryPage() {
                   </p>
                 </div>
               </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* New releases */}
-      <section className="pb-12">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex items-end justify-between mb-6">
-            <div>
-              <span className="mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-accent)]">
-                <Sparkles className="inline w-3 h-3 mr-1 -mt-0.5" />
-                New this week
-              </span>
-              <h2 className="h-display text-[22px] md:text-[28px] mt-2">Fresh on the library.</h2>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {newReleases.map((t) => (
-              <div
-                key={t.id}
-                className="group rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] overflow-hidden hover:border-[var(--color-border-default)] transition-colors"
-              >
-                <div className="relative aspect-square">
-                  <img
-                    src={t.cover_url}
-                    alt={t.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <button
-                    type="button"
-                    aria-label={`Play ${t.title}`}
-                    className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent-ring)] transition-opacity"
-                  >
-                    <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center">
-                      <Play className="w-4 h-4 text-white" />
-                    </div>
-                  </button>
-                </div>
-                <div className="p-4">
-                  <div className="text-[13.5px] text-[var(--color-text-primary)] truncate">
-                    {t.title}
-                  </div>
-                  <div className="text-[12px] text-[var(--color-text-tertiary)] truncate">
-                    {t.artist}
-                  </div>
-                  <div className="mt-3 flex items-center justify-between">
-                    <span className="mono text-[11px] text-[var(--color-text-tertiary)]">
-                      {t.bpm} BPM
-                    </span>
-                    <span className="mono text-[11px] text-[var(--color-text-tertiary)]">
-                      {t.key}
-                    </span>
-                  </div>
-                </div>
-              </div>
             ))}
           </div>
         </div>
