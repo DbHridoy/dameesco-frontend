@@ -242,14 +242,13 @@ export default function Home() {
               {
                 icon: Search,
                 eyebrow: 'AI Discovery',
-                title: 'Conversational AI Search',
+                title: 'AI Search',
                 description:
                   'Our model understands briefs like "confident but not aggressive" or "warm, nostalgic, with forward momentum." Describe what you need; skip the scrolling.',
                 bullets: [
                   'Natural-language queries',
                   'Context-aware recommendations',
                   'Search by mood, genre, or use case',
-                  'Learns your preferences over time',
                 ],
                 image:
                   'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&h=900&fit=crop',
