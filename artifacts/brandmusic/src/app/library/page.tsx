@@ -103,48 +103,130 @@ const suggestedPrompts = [
   'Epic cinematic trailer',
   'Warm acoustic brand story',
 ]
-const collections = [
+type TrackLike = { genre: string[]; mood: string[] }
+const playlists = [
   {
-    title: 'Tech & Startup',
+    title: 'Brand Essentials',
     tracks: 142,
-    blurb: 'Forward-momentum cues for product launches and brand films.',
     cover:
-      'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&h=400&fit=crop',
-    match: (t: { genre: string[]; mood: string[] }) =>
-      t.genre.some((g: string) => ['Electronic', 'Tech', 'Corporate', 'Synthwave'].includes(g)) ||
-      t.mood.some((m: string) => ['Modern', 'Innovative', 'Confident'].includes(m)),
+      'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&h=600&fit=crop',
+    match: (t: TrackLike) =>
+      t.genre.some((g) => ['Electronic', 'Tech', 'Corporate', 'Synthwave'].includes(g)) ||
+      t.mood.some((m) => ['Modern', 'Innovative', 'Confident'].includes(m)),
   },
   {
-    title: 'Cinematic Brands',
+    title: 'Cinematic Score',
     tracks: 96,
-    blurb: 'Strings, swells, and emotional arcs for hero spots.',
     cover:
-      'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&h=400&fit=crop',
-    match: (t: { genre: string[]; mood: string[] }) =>
-      t.genre.some((g: string) => ['Cinematic', 'Orchestral'].includes(g)) ||
-      t.mood.some((m: string) => ['Epic', 'Dramatic', 'Powerful', 'Emotional'].includes(m)),
+      'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&h=600&fit=crop',
+    match: (t: TrackLike) =>
+      t.genre.some((g) => ['Cinematic', 'Orchestral'].includes(g)) ||
+      t.mood.some((m) => ['Epic', 'Dramatic', 'Powerful', 'Emotional'].includes(m)),
   },
   {
-    title: 'Ambient & Calm',
+    title: 'Wellness & Calm',
     tracks: 78,
-    blurb: 'Atmospheric textures for wellness, fashion, and editorial.',
     cover:
-      'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=600&h=400&fit=crop',
-    match: (t: { genre: string[]; mood: string[] }) =>
-      t.genre.some((g: string) => ['Ambient', 'Piano', 'Acoustic'].includes(g)) ||
-      t.mood.some((m: string) => ['Calm', 'Peaceful', 'Reflective'].includes(m)),
+      'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?w=600&h=600&fit=crop',
+    match: (t: TrackLike) =>
+      t.genre.some((g) => ['Ambient', 'Piano', 'Acoustic'].includes(g)) ||
+      t.mood.some((m) => ['Calm', 'Peaceful', 'Reflective'].includes(m)),
   },
   {
     title: 'Confident Pop',
     tracks: 124,
-    blurb: 'Modern, hooky tracks for retail, lifestyle, and social.',
     cover:
-      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&h=400&fit=crop',
-    match: (t: { genre: string[]; mood: string[] }) =>
-      t.genre.some((g: string) => ['Pop', 'Funk'].includes(g)) ||
-      t.mood.some((m: string) => ['Playful', 'Fun', 'Confident', 'Uplifting'].includes(m)),
+      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&h=600&fit=crop',
+    match: (t: TrackLike) =>
+      t.genre.some((g) => ['Pop', 'Funk'].includes(g)) ||
+      t.mood.some((m) => ['Playful', 'Fun', 'Confident', 'Uplifting'].includes(m)),
+  },
+  {
+    title: 'Now Trending',
+    tracks: 64,
+    cover:
+      'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&h=600&fit=crop',
+    match: (t: TrackLike) =>
+      t.genre.some((g) => ['Pop', 'Electronic', 'Synthwave'].includes(g)) ||
+      t.mood.some((m) => ['Energetic', 'Uplifting'].includes(m)),
+  },
+  {
+    title: 'Ads & Promos',
+    tracks: 88,
+    cover:
+      'https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=600&h=600&fit=crop',
+    match: (t: TrackLike) =>
+      t.mood.some((m) => ['Energetic', 'Confident', 'Uplifting', 'Playful'].includes(m)),
+  },
+  {
+    title: 'Newly Signed',
+    tracks: 42,
+    cover:
+      'https://images.unsplash.com/photo-1493612276216-ee3925520721?w=600&h=600&fit=crop',
+    match: (t: TrackLike) =>
+      t.genre.some((g) => ['Acoustic', 'Folk', 'Piano'].includes(g)) ||
+      t.mood.some((m) => ['Warm', 'Authentic', 'Hopeful'].includes(m)),
+  },
+  {
+    title: 'Vaporwave',
+    tracks: 36,
+    cover:
+      'https://images.unsplash.com/photo-1487260211189-670c54da558d?w=600&h=600&fit=crop',
+    match: (t: TrackLike) =>
+      t.genre.some((g) => ['Synthwave', 'Electronic'].includes(g)),
+  },
+  {
+    title: 'Editorial & Fashion',
+    tracks: 54,
+    cover:
+      'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&h=600&fit=crop',
+    match: (t: TrackLike) =>
+      t.genre.some((g) => ['Ambient', 'Electronic'].includes(g)) ||
+      t.mood.some((m) => ['Modern', 'Reflective'].includes(m)),
+  },
+  {
+    title: 'Comedy & Lifestyle',
+    tracks: 47,
+    cover:
+      'https://images.unsplash.com/photo-1543007630-9710e4a00a20?w=600&h=600&fit=crop',
+    match: (t: TrackLike) =>
+      t.genre.some((g) => ['Funk', 'Pop'].includes(g)) ||
+      t.mood.some((m) => ['Playful', 'Fun'].includes(m)),
+  },
+  {
+    title: 'Trailers',
+    tracks: 31,
+    cover:
+      'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=600&h=600&fit=crop',
+    match: (t: TrackLike) =>
+      t.mood.some((m) => ['Epic', 'Dramatic', 'Powerful', 'Dark'].includes(m)),
+  },
+  {
+    title: 'Creator\u2019s Picks',
+    tracks: 119,
+    cover:
+      'https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=600&h=600&fit=crop',
+    match: (_t: TrackLike) => true,
   },
 ]
+
+function waveformBars(seed: string, count = 56): number[] {
+  let h = 2166136261
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i)
+    h = Math.imul(h, 16777619)
+  }
+  const bars: number[] = []
+  for (let i = 0; i < count; i++) {
+    h ^= h << 13
+    h ^= h >>> 17
+    h ^= h << 5
+    const v = ((h >>> 0) % 1000) / 1000
+    const env = Math.sin((i / count) * Math.PI) * 0.65 + 0.35
+    bars.push(Math.max(0.18, Math.min(1, v * env)))
+  }
+  return bars
+}
 
 export default function LibraryPage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -188,7 +270,7 @@ export default function LibraryPage() {
   }
 
   const activeCollection = selectedCollection
-    ? collections.find((c) => c.title === selectedCollection) ?? null
+    ? playlists.find((c) => c.title === selectedCollection) ?? null
     : null
   const collectionTracks = activeCollection
     ? mockTracks.filter((t) => activeCollection.match(t))
@@ -374,51 +456,145 @@ export default function LibraryPage() {
         }`}
       >
         <div className="max-w-6xl mx-auto px-6">
-          <div className="flex items-end justify-between mb-6">
+          <div className="flex items-end justify-between mb-5">
             <div>
-              <span className="mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-accent)]">
-                Collections
-              </span>
-              <h2 className="h-display text-[22px] md:text-[28px] mt-2">Curated for brand work.</h2>
+              <h2 className="text-[15px] font-medium text-[var(--color-text-primary)]">
+                Featured playlists & themes
+              </h2>
+              <p className="mt-1 text-[12.5px] text-[var(--color-text-tertiary)]">
+                Hand-picked sets across moods, genres, and use cases.
+              </p>
             </div>
             <span className="mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-text-tertiary)] hidden sm:block">
-              {collections.length} sets
+              {playlists.length} playlists
             </span>
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {collections.map((c) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            {playlists.map((c) => (
               <button
                 key={c.title}
                 type="button"
                 onClick={() => openCollection(c.title)}
                 aria-pressed={selectedCollection === c.title}
-                className={`group text-left rounded-lg border bg-[var(--color-surface)] overflow-hidden transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent-ring)] ${
-                  selectedCollection === c.title
-                    ? 'border-[var(--color-accent)]'
-                    : 'border-[var(--color-border-subtle)] hover:border-[var(--color-border-default)]'
+                className={`group text-left rounded-md overflow-hidden transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent-ring)] ${
+                  selectedCollection === c.title ? 'ring-1 ring-[var(--color-accent)]' : ''
                 }`}
               >
-                <div className="relative aspect-[5/3] overflow-hidden">
+                <div className="relative aspect-square overflow-hidden rounded-md border border-[var(--color-border-subtle)]">
                   <img
                     src={c.cover}
                     alt=""
-                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-background)] via-transparent to-transparent" />
-                  <span className="absolute top-2.5 left-2.5 mono text-[10px] uppercase tracking-[0.18em] text-white/90 bg-black/40 backdrop-blur px-1.5 py-0.5 rounded">
-                    {c.tracks} tracks
-                  </span>
-                </div>
-                <div className="p-4">
-                  <div className="text-[14px] font-medium text-[var(--color-text-primary)]">
-                    {c.title}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 p-2.5">
+                    <div className="text-[12.5px] font-medium text-white leading-tight line-clamp-2">
+                      {c.title}
+                    </div>
+                    <div className="mt-0.5 mono text-[10px] uppercase tracking-[0.16em] text-white/70">
+                      {c.tracks} tracks
+                    </div>
                   </div>
-                  <p className="mt-1 text-[12.5px] text-[var(--color-text-tertiary)] leading-relaxed">
-                    {c.blurb}
-                  </p>
                 </div>
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* Staff Picks */}
+        <div className="max-w-6xl mx-auto px-6 mt-14">
+          <div className="flex items-end justify-between mb-5">
+            <div>
+              <h2 className="text-[15px] font-medium text-[var(--color-text-primary)] flex items-center gap-2">
+                <span className="text-base">🎧</span> Staff Picks
+              </h2>
+              <p className="mt-1 text-[12.5px] text-[var(--color-text-tertiary)]">
+                Our favorite tracks right now — updated weekly.
+              </p>
+            </div>
+            <span className="mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-text-tertiary)] hidden sm:block">
+              Popular
+            </span>
+          </div>
+          <div className="rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] divide-y divide-[var(--color-border-subtle)] overflow-hidden">
+            {mockTracks.slice(0, 7).map((track) => {
+              const bars = waveformBars(track.id)
+              return (
+                <div
+                  key={`staff-${track.id}`}
+                  className="group flex items-center gap-4 px-4 py-3 hover:bg-white/[0.02] transition-colors"
+                >
+                  <div className="relative flex-shrink-0">
+                    <img
+                      src={track.cover_url}
+                      alt={track.title}
+                      className="w-10 h-10 rounded-md object-cover border border-[var(--color-border-subtle)]"
+                    />
+                    <button
+                      type="button"
+                      aria-label={`Play ${track.title}`}
+                      className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent-ring)] transition-opacity rounded-md"
+                    >
+                      <Play className="w-3.5 h-3.5 text-white" />
+                    </button>
+                  </div>
+
+                  <div className="min-w-0 w-[160px] flex-shrink-0">
+                    <div className="text-[13px] text-[var(--color-text-primary)] truncate">
+                      {track.title}
+                    </div>
+                    <div className="text-[11.5px] text-[var(--color-text-tertiary)] truncate">
+                      {track.artist}
+                    </div>
+                  </div>
+
+                  <div className="hidden md:flex flex-1 h-8 items-end gap-[2px] min-w-0">
+                    {bars.map((b, i) => (
+                      <div
+                        key={i}
+                        style={{ height: `${Math.round(b * 100)}%` }}
+                        className="flex-1 bg-[var(--color-border-default)] group-hover:bg-[var(--color-text-tertiary)] rounded-[1px] transition-colors"
+                      />
+                    ))}
+                  </div>
+
+                  <span className="mono text-[11px] text-[var(--color-text-tertiary)] flex-shrink-0 w-[40px] text-right tabular-nums">
+                    {formatDuration(track.duration)}
+                  </span>
+
+                  <div className="hidden lg:flex items-center gap-1.5 flex-shrink-0 w-[140px]">
+                    {track.mood.slice(0, 2).map((m) => (
+                      <span
+                        key={m}
+                        className="px-2 py-0.5 rounded border border-[var(--color-border-subtle)] text-[10.5px] text-[var(--color-text-secondary)] whitespace-nowrap"
+                      >
+                        {m}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <button
+                      type="button"
+                      aria-label={`Download ${track.title}`}
+                      title="Download preview"
+                      className="inline-flex items-center justify-center w-8 h-8 rounded-md border border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-default)] hover:text-[var(--color-text-primary)] transition-colors"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`License ${track.title}`}
+                      title="License track"
+                      className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-md text-[12px] bg-[var(--color-accent)] text-white hover:opacity-90 transition-opacity"
+                    >
+                      <FileText className="w-3.5 h-3.5" />
+                      <span className="hidden xl:inline">License</span>
+                    </button>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </div>
       </section>
