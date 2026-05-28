@@ -210,20 +210,42 @@ const playlists = [
   },
 ]
 
-function waveformBars(seed: string, count = 56): number[] {
+function waveformBars(seed: string, count = 140): number[] {
   let h = 2166136261
   for (let i = 0; i < seed.length; i++) {
     h ^= seed.charCodeAt(i)
     h = Math.imul(h, 16777619)
   }
-  const bars: number[] = []
-  for (let i = 0; i < count; i++) {
+  const rand = () => {
     h ^= h << 13
     h ^= h >>> 17
     h ^= h << 5
-    const v = ((h >>> 0) % 1000) / 1000
-    const env = Math.sin((i / count) * Math.PI) * 0.65 + 0.35
-    bars.push(Math.max(0.18, Math.min(1, v * env)))
+    return ((h >>> 0) % 100000) / 100000
+  }
+  // Two octaves of pseudo-noise for a more organic, music-like envelope
+  const slow: number[] = []
+  const fast: number[] = []
+  const slowPts = Math.max(6, Math.floor(count / 14))
+  for (let i = 0; i <= slowPts; i++) slow.push(rand())
+  for (let i = 0; i < count; i++) fast.push(rand())
+
+  const bars: number[] = []
+  for (let i = 0; i < count; i++) {
+    const t = (i / (count - 1)) * slowPts
+    const i0 = Math.floor(t)
+    const i1 = Math.min(slowPts, i0 + 1)
+    const f = t - i0
+    const ef = f * f * (3 - 2 * f)
+    const low = slow[i0] * (1 - ef) + slow[i1] * ef
+    const hi = fast[i] * 0.55 + 0.45
+    let v = low * 0.7 + hi * 0.3
+    // Soft musical envelope (gentle attack/release, slight mid emphasis)
+    const u = i / (count - 1)
+    const attack = Math.min(1, u / 0.06)
+    const release = Math.min(1, (1 - u) / 0.08)
+    const env = Math.min(attack, release)
+    v = v * (0.55 + 0.45 * env)
+    bars.push(Math.max(0.06, Math.min(1, v)))
   }
   return bars
 }
@@ -818,14 +840,31 @@ export default function LibraryPage() {
                     </div>
                   </div>
 
-                  <div className="hidden md:flex flex-1 h-8 items-end gap-[2px] min-w-0">
-                    {bars.map((b, i) => (
-                      <div
-                        key={i}
-                        style={{ height: `${Math.round(b * 100)}%` }}
-                        className="flex-1 bg-[var(--color-border-default)] group-hover:bg-[var(--color-text-tertiary)] rounded-[1px] transition-colors"
-                      />
-                    ))}
+                  <div className="hidden md:block flex-1 min-w-0 text-[var(--color-text-tertiary)]/70 group-hover:text-[var(--color-text-secondary)] transition-colors">
+                    <svg
+                      viewBox={`0 0 ${bars.length * 2} 40`}
+                      preserveAspectRatio="none"
+                      className="w-full h-8 block"
+                      aria-hidden="true"
+                    >
+                      {bars.map((b, i) => {
+                        const x = i * 2 + 1
+                        const half = Math.max(0.6, b * 18)
+                        return (
+                          <line
+                            key={i}
+                            x1={x}
+                            x2={x}
+                            y1={20 - half}
+                            y2={20 + half}
+                            stroke="currentColor"
+                            strokeWidth={1.1}
+                            strokeLinecap="round"
+                            vectorEffect="non-scaling-stroke"
+                          />
+                        )
+                      })}
+                    </svg>
                   </div>
 
                   <span className="mono text-[11px] text-[var(--color-text-tertiary)] flex-shrink-0 w-[40px] text-right tabular-nums">
