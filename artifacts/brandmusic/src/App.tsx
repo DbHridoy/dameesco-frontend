@@ -57,6 +57,7 @@ function AppRoutes() {
 function App() {
   return (
     <AuthProvider>
+      <div className="bg-fx" aria-hidden="true" />
       <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
         <AppRoutes />
       </WouterRouter>

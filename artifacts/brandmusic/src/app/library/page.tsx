@@ -209,7 +209,7 @@ export default function LibraryPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[var(--color-background)] text-[var(--color-text-primary)]">
+    <main className="min-h-screen text-[var(--color-text-primary)]">
       <Navigation />
 
       {/* Header */}

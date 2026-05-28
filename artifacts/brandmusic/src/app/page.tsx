@@ -144,12 +144,12 @@ function Faq() {
 export default function Home() {
 
   return (
-    <main className="min-h-screen bg-[var(--color-background)] text-[var(--color-text-primary)]">
+    <main className="min-h-screen text-[var(--color-text-primary)]">
       <Navigation />
 
       {/* Hero */}
       <section className="relative pt-32 pb-24 overflow-hidden">
-        <div className="absolute inset-0 bg-grid bg-grid-fade pointer-events-none" />
+        <div className="absolute inset-0 hero-glow pointer-events-none" />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
           <h1 className="h-display text-[44px] sm:text-[56px] md:text-[64px] text-[var(--color-text-primary)]">
             Music that sounds<br />
