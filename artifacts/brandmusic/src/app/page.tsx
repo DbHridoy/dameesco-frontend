@@ -5,7 +5,6 @@ import {
   Search,
   Waves,
   Layers,
-  Users,
   Check,
   Plus,
   Minus,
@@ -383,62 +382,6 @@ export default function Home() {
                 </div>
               )
             })}
-          </div>
-        </div>
-      </section>
-
-      {/* Built for teams */}
-      <section className="py-20 border-t border-[var(--color-border-subtle)]">
-        <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <span className="mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-accent)]">
-              Built for teams
-            </span>
-            <h2 className="h-display text-[32px] md:text-[40px] mt-3">
-              Designed for the way agencies actually work.
-            </h2>
-            <p className="mt-4 text-[15px] text-[var(--color-text-secondary)] leading-relaxed">
-              Stems on every track. Video sync before licensing. Shared shortlists for stakeholders. Clear, single‑seat pricing — no surprise fees.
-            </p>
-            <div className="mt-7 flex items-center gap-3">
-              <Link href="/library">
-                <Button size="md">Browse music</Button>
-              </Link>
-            </div>
-          </div>
-
-          <div className="rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] p-6">
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-[var(--color-text-tertiary)]" />
-                <span className="text-[13px] text-[var(--color-text-secondary)]">
-                  Shortlist · Q1 Campaign
-                </span>
-              </div>
-              <span className="mono text-[10px] uppercase tracking-[0.18em] text-[var(--color-text-tertiary)]">
-                Shared
-              </span>
-            </div>
-            <div className="space-y-2">
-              {[
-                { t: 'Ambient Drive', a: 'Nova Strings', bpm: 92 },
-                { t: 'Forward Motion', a: 'Atlas Audio', bpm: 118 },
-                { t: 'Soft Confidence', a: 'Polar Field', bpm: 84 },
-              ].map((r) => (
-                <div
-                  key={r.t}
-                  className="flex items-center justify-between rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-background)] px-3 py-2.5"
-                >
-                  <div>
-                    <div className="text-[13.5px] text-[var(--color-text-primary)]">{r.t}</div>
-                    <div className="text-[12px] text-[var(--color-text-tertiary)]">{r.a}</div>
-                  </div>
-                  <span className="mono text-[11px] text-[var(--color-text-tertiary)]">
-                    {r.bpm} BPM
-                  </span>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </section>
