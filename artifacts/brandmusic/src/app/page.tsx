@@ -43,13 +43,6 @@ const proof = [
   'Video sync preview',
 ]
 
-const stats = [
-  { value: '50K+', label: 'Cleared tracks' },
-  { value: '250+', label: 'Agencies & studios' },
-  { value: '< 5 min', label: 'Average brief → shortlist' },
-  { value: '100%', label: 'Stems on every release' },
-]
-
 const plans = [
   {
     name: 'Starter',
@@ -207,27 +200,6 @@ export default function Home() {
               {p}
             </span>
           ))}
-        </div>
-      </section>
-
-      {/* Stats */}
-      <section className="py-20">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {stats.map((s) => (
-              <div
-                key={s.label}
-                className="rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] p-6"
-              >
-                <div className="h-display text-[28px] md:text-[32px] text-[var(--color-text-primary)]">
-                  {s.value}
-                </div>
-                <div className="mt-1 mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-text-tertiary)]">
-                  {s.label}
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
