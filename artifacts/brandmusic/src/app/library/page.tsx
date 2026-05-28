@@ -303,7 +303,6 @@ export default function LibraryPage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   type LicenseForm = {
-    useType: string
     media: string[]
     term: string
     territory: string
@@ -313,7 +312,6 @@ export default function LibraryPage() {
     brand: string
   }
   const emptyLicenseForm: LicenseForm = {
-    useType: '',
     media: [],
     term: '',
     territory: '',
@@ -342,7 +340,6 @@ export default function LibraryPage() {
     }))
   }
   const licenseValid =
-    licenseForm.useType !== '' &&
     licenseForm.media.length > 0 &&
     licenseForm.term !== '' &&
     licenseForm.territory !== '' &&
@@ -1114,11 +1111,6 @@ export default function LibraryPage() {
 
       {/* License modal */}
       {licenseTrack && (() => {
-        const useTypes = [
-          'Commercial ad', 'Social video', 'Brand film', 'Podcast', 'Trailer',
-          'Event', 'TV show', 'Film', 'Internal video', 'Website', 'App',
-          'Experiential', 'Other',
-        ]
         const mediaOptions = [
           'TV', 'Paid social', 'Organic social', 'YouTube', 'TikTok', 'Instagram',
           'Radio', 'Cinema', 'OOH', 'Website', 'Streaming', 'Podcasts',
@@ -1195,23 +1187,6 @@ export default function LibraryPage() {
               ) : (
                 <>
                   <div className="overflow-y-auto px-5 py-5 flex-1">
-                    {/* Type of use */}
-                    <div className={sectionCls}>
-                      <div className={labelCls}>Type of use</div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {useTypes.map((u) => (
-                          <button
-                            key={u}
-                            type="button"
-                            onClick={() => setLicenseForm((f) => ({ ...f, useType: u }))}
-                            className={`${chipBase} ${licenseForm.useType === u ? chipOn : chipOff}`}
-                          >
-                            {u}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
                     {/* Media / platforms */}
                     <div className={sectionCls}>
                       <div className={labelCls}>Media / platforms <span className="lowercase tracking-normal text-[var(--color-text-tertiary)]">(select all that apply)</span></div>
