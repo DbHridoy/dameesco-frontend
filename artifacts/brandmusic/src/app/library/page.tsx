@@ -475,8 +475,8 @@ export default function LibraryPage() {
                   </div>
 
                   {hasQuery && (
-                    <div className="hidden sm:flex flex-col items-end gap-1 flex-shrink-0 w-20">
-                      <span className="mono text-[10.5px] text-[var(--color-accent)]">
+                    <div className="hidden sm:flex flex-col items-end gap-1 flex-shrink-0 w-[84px]">
+                      <span className="mono text-[10.5px] text-[var(--color-accent)] tabular-nums">
                         {relevance}% match
                       </span>
                       <div className="w-full h-1 rounded-full bg-[var(--color-border-subtle)] overflow-hidden">
@@ -488,27 +488,27 @@ export default function LibraryPage() {
                     </div>
                   )}
 
-                  <div className="hidden md:flex items-center gap-1.5 flex-shrink-0">
+                  <div className="hidden md:flex items-center justify-start gap-1.5 flex-shrink-0 w-[150px]">
                     {track.genre.slice(0, 2).map((g) => (
                       <span
                         key={g}
-                        className="px-2 py-0.5 rounded border border-[var(--color-border-subtle)] text-[11px] text-[var(--color-text-secondary)]"
+                        className="px-2 py-0.5 rounded border border-[var(--color-border-subtle)] text-[11px] text-[var(--color-text-secondary)] whitespace-nowrap"
                       >
                         {g}
                       </span>
                     ))}
                   </div>
 
-                  <div className="hidden lg:flex items-center gap-4 flex-shrink-0">
-                    <span className="mono text-[11px] text-[var(--color-text-tertiary)]">
+                  <div className="hidden lg:grid grid-cols-2 gap-x-4 flex-shrink-0 w-[120px] text-right">
+                    <span className="mono text-[11px] text-[var(--color-text-tertiary)] tabular-nums text-right">
                       {track.bpm} BPM
                     </span>
-                    <span className="mono text-[11px] text-[var(--color-text-tertiary)]">
+                    <span className="mono text-[11px] text-[var(--color-text-tertiary)] text-right">
                       {track.key}
                     </span>
                   </div>
 
-                  <span className="mono text-[11px] text-[var(--color-text-tertiary)] flex-shrink-0">
+                  <span className="mono text-[11px] text-[var(--color-text-tertiary)] flex-shrink-0 w-[40px] text-right tabular-nums">
                     {formatDuration(track.duration)}
                   </span>
 
