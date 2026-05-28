@@ -165,7 +165,7 @@ export default function Home() {
           </h1>
 
           <p className="mt-6 text-[16px] md:text-[17px] text-[var(--color-text-secondary)] max-w-2xl mx-auto leading-relaxed">
-            Describe a mood. Get tracks that fit. License in minutes — with stems, video sync, and clear terms on every release.
+            Describe the mood, scene, or feeling you're trying to capture and instantly find tracks that bring it to life
           </p>
 
           <div className="mt-10 max-w-2xl mx-auto">
