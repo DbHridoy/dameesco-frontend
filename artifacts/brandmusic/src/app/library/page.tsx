@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Navigation from '@/components/ui/Navigation'
 import Footer from '@/components/ui/Footer'
 import Button from '@/components/ui/Button'
@@ -13,8 +13,96 @@ import {
   X,
   Check,
   Loader2,
+  Sparkles,
 } from 'lucide-react'
 import { mockTracks } from '@/lib/mockTracks'
+import type { Track } from '@/types/database.types'
+
+type Lex = { keys: string[]; moods?: string[]; genres?: string[]; energy?: 'high' | 'low' }
+const lexicon: Lex[] = [
+  { keys: ['energetic', 'energy', 'powerful', 'intense', 'fast', 'driving', 'pumping'], moods: ['Energetic', 'Powerful'], energy: 'high' },
+  { keys: ['calm', 'chill', 'relaxed', 'peaceful', 'slow', 'soft', 'gentle', 'meditative', 'wellness'], moods: ['Calm', 'Peaceful', 'Reflective'], energy: 'low' },
+  { keys: ['uplifting', 'happy', 'hopeful', 'positive', 'inspiring', 'optimistic'], moods: ['Uplifting', 'Hopeful'] },
+  { keys: ['dark', 'moody', 'mysterious', 'tense'], moods: ['Dark', 'Dramatic'] },
+  { keys: ['dramatic', 'epic', 'cinematic', 'trailer', 'film', 'movie'], moods: ['Dramatic', 'Epic', 'Powerful'], genres: ['Cinematic', 'Orchestral'] },
+  { keys: ['corporate', 'business', 'professional', 'office'], genres: ['Corporate'] },
+  { keys: ['tech', 'startup', 'modern', 'innovative', 'product', 'launch', 'app', 'saas'], moods: ['Modern', 'Innovative'], genres: ['Electronic', 'Tech'] },
+  { keys: ['ambient', 'atmospheric', 'background', 'spacious', 'airy'], genres: ['Ambient'] },
+  { keys: ['acoustic', 'warm', 'organic', 'authentic', 'folk', 'natural', 'story', 'human'], moods: ['Warm', 'Authentic', 'Hopeful'], genres: ['Acoustic', 'Folk'] },
+  { keys: ['playful', 'fun', 'funky', 'quirky', 'upbeat'], moods: ['Playful', 'Fun'], genres: ['Funk', 'Pop'] },
+  { keys: ['confident', 'bold', 'assertive', 'strong'], moods: ['Confident'] },
+  { keys: ['piano'], genres: ['Piano'] },
+  { keys: ['pop'], genres: ['Pop'] },
+  { keys: ['electronic', 'synth'], genres: ['Electronic'] },
+]
+
+type Match = { score: number; reasons: string[] }
+function scoreTrack(track: Track, query: string): Match {
+  const q = query.toLowerCase()
+  if (!q.trim()) return { score: 0, reasons: [] }
+  const tokens = q.split(/[^a-z0-9]+/).filter(Boolean)
+  let score = 0
+  const reasons = new Set<string>()
+
+  for (const entry of lexicon) {
+    const hit = entry.keys.some((k) => tokens.includes(k) || q.includes(k))
+    if (!hit) continue
+    if (entry.moods) {
+      for (const m of entry.moods) {
+        if (track.mood.includes(m)) {
+          score += 2
+          reasons.add(m)
+        }
+      }
+    }
+    if (entry.genres) {
+      for (const g of entry.genres) {
+        if (track.genre.includes(g)) {
+          score += 2
+          reasons.add(g)
+        }
+      }
+    }
+    if (entry.energy === 'high' && track.energy >= 0.7) {
+      score += 1
+      reasons.add('High energy')
+    }
+    if (entry.energy === 'low' && track.energy <= 0.5) {
+      score += 1
+      reasons.add('Low energy')
+    }
+  }
+
+  for (const token of tokens) {
+    if (token.length < 3) continue
+    if (track.title.toLowerCase().includes(token)) {
+      score += 1
+      reasons.add(`“${token}”`)
+    }
+    for (const g of track.genre) {
+      if (g.toLowerCase().includes(token)) {
+        score += 1
+        reasons.add(g)
+      }
+    }
+    for (const m of track.mood) {
+      if (m.toLowerCase().includes(token)) {
+        score += 1
+        reasons.add(m)
+      }
+    }
+  }
+
+  return { score, reasons: Array.from(reasons) }
+}
+
+const suggestedPrompts = [
+  'Confident tech startup launch',
+  'Calm piano for wellness',
+  'Epic cinematic trailer',
+  'Warm acoustic brand story',
+  'Playful product reveal',
+]
 import FavoriteButton from '@/components/ui/FavoriteButton'
 import AddToPlaylistButton from '@/components/ui/AddToPlaylistButton'
 import { useFavorites } from '@/hooks/useFavorites'
@@ -58,7 +146,23 @@ export default function LibraryPage() {
   const { favorites } = useFavorites()
   const { playlists } = usePlaylists()
   const [searchQuery, setSearchQuery] = useState('')
+  const [committedQuery, setCommittedQuery] = useState('')
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
+
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setCommittedQuery('')
+      setIsAnalyzing(false)
+      return
+    }
+    setIsAnalyzing(true)
+    const t = setTimeout(() => {
+      setCommittedQuery(searchQuery)
+      setIsAnalyzing(false)
+    }, 650)
+    return () => clearTimeout(t)
+  }, [searchQuery])
   const [syncOpen, setSyncOpen] = useState(false)
   const [syncFile, setSyncFile] = useState<File | null>(null)
   const [syncStage, setSyncStage] = useState<'idle' | 'analyzing' | 'ready'>('idle')
@@ -86,15 +190,21 @@ export default function LibraryPage() {
     return `${(b / (1024 * 1024)).toFixed(1)} MB`
   }
 
-  const filteredTracks = mockTracks.filter((track) => {
-    const matchesSearch =
-      track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      track.artist.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      track.genre.some((g) => g.toLowerCase().includes(searchQuery.toLowerCase()))
-    const matchesFavorites =
-      !showFavoritesOnly || favorites.some((fav) => fav.track_id === track.id)
-    return matchesSearch && matchesFavorites
-  })
+  const hasQuery = committedQuery.trim().length > 0
+  const scored = mockTracks.map((track) => ({
+    track,
+    match: scoreTrack(track, committedQuery),
+  }))
+  const maxScore = Math.max(1, ...scored.map((s) => s.match.score))
+
+  const filteredTracks = scored
+    .filter(({ track, match }) => {
+      const favOk = !showFavoritesOnly || favorites.some((fav) => fav.track_id === track.id)
+      if (!favOk) return false
+      if (!hasQuery) return true
+      return match.score > 0
+    })
+    .sort((a, b) => (hasQuery ? b.match.score - a.match.score : 0))
 
 
   const formatDuration = (seconds: number) => {
@@ -128,16 +238,46 @@ export default function LibraryPage() {
         <div className="max-w-4xl mx-auto px-6">
           <div className="flex items-center gap-2 p-1.5 rounded-lg border border-[var(--color-border-default)] bg-[var(--color-surface)] focus-within:border-[var(--color-accent)] transition-colors">
             <div className="pl-3 text-[var(--color-text-tertiary)]">
-              <Search className="w-4 h-4" />
+              {isAnalyzing ? (
+                <Loader2 className="w-4 h-4 animate-spin text-[var(--color-accent)]" />
+              ) : (
+                <Sparkles className="w-4 h-4 text-[var(--color-accent)]" />
+              )}
             </div>
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              aria-label="Search tracks by title, artist, or genre"
-              placeholder="Confident but not aggressive, for a tech startup…"
+              aria-label="Describe the music you need"
+              placeholder="Describe the mood, scene, or feeling — e.g. confident tech startup launch"
               className="flex-1 bg-transparent text-[14px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] outline-none py-2"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                aria-label="Clear search"
+                className="mr-1 p-1.5 rounded-md text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] hover:bg-white/[0.04] transition-colors"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span className="mono text-[10px] uppercase tracking-[0.18em] text-[var(--color-text-tertiary)] mr-1">
+              Try
+            </span>
+            {suggestedPrompts.map((p) => (
+              <button
+                key={p}
+                type="button"
+                onClick={() => setSearchQuery(p)}
+                className="h-8 px-3 rounded-md text-[12.5px] border border-[var(--color-border-subtle)] bg-[var(--color-surface)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-default)] hover:text-[var(--color-text-primary)] transition-colors"
+              >
+                {p}
+              </button>
+            ))}
           </div>
 
           {user && (
@@ -247,29 +387,61 @@ export default function LibraryPage() {
       <section className="pb-24">
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex items-baseline justify-between mb-4">
-            <h2 className="text-[14px] font-medium text-[var(--color-text-primary)]">
-              {showFavoritesOnly ? 'Your favorites' : 'All tracks'}
+            <h2 className="text-[14px] font-medium text-[var(--color-text-primary)] flex items-center gap-2">
+              {hasQuery && <Sparkles className="w-3.5 h-3.5 text-[var(--color-accent)]" />}
+              {hasQuery
+                ? 'AI matches'
+                : showFavoritesOnly
+                  ? 'Your favorites'
+                  : 'All tracks'}
+              {hasQuery && (
+                <span className="text-[12px] text-[var(--color-text-tertiary)] font-normal">
+                  for "{committedQuery}"
+                </span>
+              )}
             </h2>
             <span className="mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-text-tertiary)]">
-              {filteredTracks.length} {filteredTracks.length === 1 ? 'track' : 'tracks'}
+              {isAnalyzing
+                ? 'Analyzing…'
+                : `${filteredTracks.length} ${filteredTracks.length === 1 ? 'track' : 'tracks'}`}
             </span>
           </div>
 
-          {filteredTracks.length === 0 ? (
+          {isAnalyzing ? (
+            <div className="rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] py-16 text-center">
+              <Loader2 className="w-6 h-6 text-[var(--color-accent)] mx-auto mb-3 animate-spin" />
+              <h3 className="text-[14px] font-medium text-[var(--color-text-primary)] mb-1">
+                Reading your brief
+              </h3>
+              <p className="text-[13px] text-[var(--color-text-secondary)]">
+                Matching mood, energy, and genre against the catalog…
+              </p>
+            </div>
+          ) : filteredTracks.length === 0 ? (
             <div className="rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] py-16 text-center">
               <Music2 className="w-6 h-6 text-[var(--color-text-tertiary)] mx-auto mb-3" />
               <h3 className="text-[14px] font-medium text-[var(--color-text-primary)] mb-1">
-                {showFavoritesOnly ? 'No favorites yet' : 'No tracks found'}
+                {showFavoritesOnly
+                  ? 'No favorites yet'
+                  : hasQuery
+                    ? 'No close matches'
+                    : 'No tracks found'}
               </h3>
               <p className="text-[13px] text-[var(--color-text-secondary)]">
                 {showFavoritesOnly
                   ? 'Start adding tracks to your favorites.'
-                  : 'Try adjusting your search or filters.'}
+                  : hasQuery
+                    ? 'Try a different mood, genre, or use one of the suggested briefs above.'
+                    : 'Try adjusting your search or filters.'}
               </p>
             </div>
           ) : (
             <div className="rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] divide-y divide-[var(--color-border-subtle)] overflow-hidden">
-              {filteredTracks.map((track) => (
+              {filteredTracks.map(({ track, match }) => {
+                const relevance = hasQuery
+                  ? Math.min(100, Math.round((match.score / maxScore) * 100))
+                  : 0
+                return (
                 <div
                   key={track.id}
                   className="group flex items-center gap-4 px-4 py-3 hover:bg-white/[0.02] transition-colors"
@@ -296,7 +468,33 @@ export default function LibraryPage() {
                     <div className="text-[12px] text-[var(--color-text-tertiary)] truncate">
                       {track.artist}
                     </div>
+                    {hasQuery && match.reasons.length > 0 && (
+                      <div className="mt-1.5 flex flex-wrap items-center gap-1">
+                        {match.reasons.slice(0, 4).map((r) => (
+                          <span
+                            key={r}
+                            className="inline-flex items-center px-1.5 py-0.5 rounded text-[10.5px] bg-[var(--color-accent-soft)] text-[var(--color-accent)]"
+                          >
+                            {r}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
+
+                  {hasQuery && (
+                    <div className="hidden sm:flex flex-col items-end gap-1 flex-shrink-0 w-20">
+                      <span className="mono text-[10.5px] text-[var(--color-accent)]">
+                        {relevance}% match
+                      </span>
+                      <div className="w-full h-1 rounded-full bg-[var(--color-border-subtle)] overflow-hidden">
+                        <div
+                          className="h-full bg-[var(--color-accent)] transition-all"
+                          style={{ width: `${relevance}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
 
                   <div className="hidden md:flex items-center gap-1.5 flex-shrink-0">
                     {track.genre.slice(0, 2).map((g) => (
@@ -327,7 +525,8 @@ export default function LibraryPage() {
                     <AddToPlaylistButton trackId={track.id} />
                   </div>
                 </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>
