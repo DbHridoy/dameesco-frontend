@@ -6,7 +6,6 @@ import {
   Search,
   Play,
   Music2,
-  Heart,
   Video,
   ArrowRight,
   Upload,
@@ -14,6 +13,8 @@ import {
   Check,
   Loader2,
   Sparkles,
+  Download,
+  FileText,
 } from 'lucide-react'
 import { mockTracks } from '@/lib/mockTracks'
 import type { Track } from '@/types/database.types'
@@ -102,13 +103,6 @@ const suggestedPrompts = [
   'Epic cinematic trailer',
   'Warm acoustic brand story',
 ]
-import FavoriteButton from '@/components/ui/FavoriteButton'
-import AddToPlaylistButton from '@/components/ui/AddToPlaylistButton'
-import { useFavorites } from '@/hooks/useFavorites'
-import { usePlaylists } from '@/hooks/usePlaylists'
-import { useAuth } from '@/contexts/AuthContext'
-
-
 const collections = [
   {
     title: 'Tech & Startup',
@@ -141,13 +135,9 @@ const collections = [
 ]
 
 export default function LibraryPage() {
-  const { user } = useAuth()
-  const { favorites } = useFavorites()
-  const { playlists } = usePlaylists()
   const [searchQuery, setSearchQuery] = useState('')
   const [committedQuery, setCommittedQuery] = useState('')
   const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
 
   const analyzeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => {
@@ -205,9 +195,7 @@ export default function LibraryPage() {
   const maxScore = Math.max(1, ...scored.map((s) => s.match.score))
 
   const filteredTracks = scored
-    .filter(({ track, match }) => {
-      const favOk = !showFavoritesOnly || favorites.some((fav) => fav.track_id === track.id)
-      if (!favOk) return false
+    .filter(({ match }) => {
       if (!hasQuery) return true
       return match.score > 0
     })
@@ -313,33 +301,6 @@ export default function LibraryPage() {
             ))}
           </div>
 
-          {user && (
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              <button
-                onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-                className={`inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-[12.5px] border transition-colors ${
-                  showFavoritesOnly
-                    ? 'bg-[var(--color-accent-soft)] border-[var(--color-accent)] text-[var(--color-accent)]'
-                    : 'bg-[var(--color-surface)] border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-default)] hover:text-[var(--color-text-primary)]'
-                }`}
-              >
-                <Heart
-                  className={`w-3.5 h-3.5 ${showFavoritesOnly ? 'fill-[var(--color-accent)]' : ''}`}
-                />
-                Favorites
-                <span className="mono text-[11px] text-[var(--color-text-tertiary)]">
-                  {favorites.length}
-                </span>
-              </button>
-              <div className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-surface)] text-[12.5px] text-[var(--color-text-secondary)]">
-                <Music2 className="w-3.5 h-3.5" />
-                Playlists
-                <span className="mono text-[11px] text-[var(--color-text-tertiary)]">
-                  {playlists.length}
-                </span>
-              </div>
-            </div>
-          )}
         </div>
       </section>
 
@@ -422,11 +383,7 @@ export default function LibraryPage() {
           <div className="flex items-baseline justify-between mb-4">
             <h2 className="text-[14px] font-medium text-[var(--color-text-primary)] flex items-center gap-2">
               {hasQuery && <Sparkles className="w-3.5 h-3.5 text-[var(--color-accent)]" />}
-              {hasQuery
-                ? 'AI matches'
-                : showFavoritesOnly
-                  ? 'Your favorites'
-                  : 'All tracks'}
+              {hasQuery ? 'AI matches' : 'All tracks'}
               {hasQuery && (
                 <span className="text-[12px] text-[var(--color-text-tertiary)] font-normal">
                   for "{committedQuery}"
@@ -454,18 +411,12 @@ export default function LibraryPage() {
             <div className="rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] py-16 text-center">
               <Music2 className="w-6 h-6 text-[var(--color-text-tertiary)] mx-auto mb-3" />
               <h3 className="text-[14px] font-medium text-[var(--color-text-primary)] mb-1">
-                {showFavoritesOnly
-                  ? 'No favorites yet'
-                  : hasQuery
-                    ? 'No close matches'
-                    : 'No tracks found'}
+                {hasQuery ? 'No close matches' : 'No tracks found'}
               </h3>
               <p className="text-[13px] text-[var(--color-text-secondary)]">
-                {showFavoritesOnly
-                  ? 'Start adding tracks to your favorites.'
-                  : hasQuery
-                    ? 'Try a different mood, genre, or use one of the suggested briefs above.'
-                    : 'Try adjusting your search or filters.'}
+                {hasQuery
+                  ? 'Try a different mood, genre, or use one of the suggested briefs above.'
+                  : 'Try adjusting your search or filters.'}
               </p>
             </div>
           ) : (
@@ -553,9 +504,25 @@ export default function LibraryPage() {
                     {formatDuration(track.duration)}
                   </span>
 
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <FavoriteButton trackId={track.id} />
-                    <AddToPlaylistButton trackId={track.id} />
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <button
+                      type="button"
+                      aria-label={`Download ${track.title}`}
+                      title="Download preview"
+                      className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-md text-[12px] border border-[var(--color-border-subtle)] bg-[var(--color-surface)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-default)] hover:text-[var(--color-text-primary)] transition-colors"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span className="hidden md:inline">Download</span>
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`License ${track.title}`}
+                      title="License track"
+                      className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-md text-[12px] bg-[var(--color-accent)] text-white hover:opacity-90 transition-opacity"
+                    >
+                      <FileText className="w-3.5 h-3.5" />
+                      <span className="hidden md:inline">License</span>
+                    </button>
                   </div>
                 </div>
                 )
