@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'wouter'
 import {
-  ArrowRight,
   Search,
   Waves,
   Layers,
@@ -161,27 +160,7 @@ export default function Home() {
             Describe the mood, scene, or feeling you're trying to capture and instantly find tracks that bring it to life
           </p>
 
-          <div className="mt-10 max-w-2xl mx-auto">
-            <div className="flex items-center gap-2 p-1.5 rounded-lg border border-[var(--color-border-default)] bg-[var(--color-surface)] focus-within:border-[var(--color-accent)] transition-colors">
-              <div className="pl-3 text-[var(--color-text-tertiary)]">
-                <Search className="w-4 h-4" />
-              </div>
-              <input
-                type="text"
-                aria-label="Describe the music you need"
-                placeholder="Confident but not aggressive, for a tech startup…"
-                className="flex-1 bg-transparent text-[14px] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] outline-none py-2"
-              />
-              <Link href="/library">
-                <Button size="sm">
-                  Search
-                  <ArrowRight className="ml-1.5 w-3.5 h-3.5" />
-                </Button>
-              </Link>
-            </div>
-          </div>
-
-          <div className="mt-6 flex items-center justify-center gap-3">
+          <div className="mt-10 flex items-center justify-center gap-3">
             <Link href="/library">
               <Button size="md">Browse the library</Button>
             </Link>
