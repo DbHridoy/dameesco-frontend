@@ -151,7 +151,7 @@ const playlists = [
       t.mood.some((m) => ['Energetic', 'Uplifting'].includes(m)),
   },
   {
-    title: 'Ads & Promos',
+    title: 'Beauty Focused',
     tracks: 88,
     cover:
       'https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=600&h=600&fit=crop',
@@ -159,7 +159,7 @@ const playlists = [
       t.mood.some((m) => ['Energetic', 'Confident', 'Uplifting', 'Playful'].includes(m)),
   },
   {
-    title: 'Newly Signed',
+    title: 'Pharma Focused',
     tracks: 42,
     cover:
       'https://images.unsplash.com/photo-1493612276216-ee3925520721?w=600&h=600&fit=crop',
