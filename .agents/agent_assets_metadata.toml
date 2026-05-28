@@ -1,0 +1,32 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "jeaRHiG_IPhAgEZB1KSjB"
+uri = "file://.local/previews/A.jpg"
+type = "image"
+title = "Option A — Red & black mixer knobs"
+
+[[outputs]]
+id = "Wl7Km5jnRK14z5HhpdtIi"
+uri = "file://.local/previews/B.jpg"
+type = "image"
+title = "Option B — Mixing console with faders"
+
+[[outputs]]
+id = "cf-fdfZQ2IY62F34c6A7a"
+uri = "file://.local/previews/C.jpg"
+type = "image"
+title = "Option C — Classic mixing desk overview"
+
+[[outputs]]
+id = "KOK7X15O9pzNkTwdrCTwp"
+uri = "file://.local/previews/D.jpg"
+type = "image"
+title = "Option D — DJ mixer / fader detail"
+
+[[outputs]]
+id = "hN1rGV3MZ_SdS5JU63_G3"
+uri = "file://.local/previews/E.jpg"
+type = "image"
+title = "Option E — Synth + knobs (moody)"
