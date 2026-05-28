@@ -345,9 +345,6 @@ export default function Home() {
             <h2 className="h-display text-[32px] md:text-[40px] mt-3">
               Straightforward, per seat.
             </h2>
-            <p className="mt-4 text-[15px] text-[var(--color-text-secondary)] leading-relaxed">
-              Start free. Upgrade when you start licensing. Talk to us when you scale.
-            </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-3">
