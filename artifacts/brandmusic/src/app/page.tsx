@@ -292,9 +292,8 @@ export default function Home() {
               {
                 icon: Sliders,
                 eyebrow: 'Stems',
-                title: 'Professional Stem Access',
-                description:
-                  'Every track ships with separated stems (drums, bass, melody, vocals). Give your post team full control over the final mix.',
+                title: 'Stem Access',
+                description: '',
                 bullets: [
                   'Isolated instrument tracks',
                   'Adjust levels independently',
@@ -323,9 +322,11 @@ export default function Home() {
                     <h3 className="h-display text-[26px] md:text-[32px] mb-4">
                       {f.title}
                     </h3>
-                    <p className="text-[15px] text-[var(--color-text-secondary)] leading-relaxed mb-6">
-                      {f.description}
-                    </p>
+                    {f.description && (
+                      <p className="text-[15px] text-[var(--color-text-secondary)] leading-relaxed mb-6">
+                        {f.description}
+                      </p>
+                    )}
                     <ul className="space-y-2.5">
                       {f.bullets.map((b) => (
                         <li
