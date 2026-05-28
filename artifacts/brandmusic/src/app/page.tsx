@@ -14,6 +14,7 @@ import Navigation from '@/components/ui/Navigation'
 import Footer from '@/components/ui/Footer'
 import Button from '@/components/ui/Button'
 import { mockTracks } from '@/lib/mockTracks'
+import stemAccessImage from '@assets/Nano_Banana_2_-_virtual_control_on_an_audio_mixing_board_or_di_1779971692046.png'
 
 const steps = [
   {
@@ -275,8 +276,7 @@ export default function Home() {
                 description:
                   'Download the full mix or access mixed stems when you need more flexibility.',
                 bullets: [],
-                image:
-                  'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=1200&h=900&fit=crop',
+                image: stemAccessImage,
               },
             ].map((f, idx) => {
               const reverse = idx % 2 === 1
