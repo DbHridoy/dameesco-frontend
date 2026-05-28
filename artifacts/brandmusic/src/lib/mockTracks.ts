@@ -4,7 +4,7 @@ export const mockTracks: Track[] = [
   {
     id: 'track-1',
     title: 'Uplifting Corporate',
-    artist: 'Brandmusic Studio',
+    artist: 'SONAR Studio',
     duration: 180,
     bpm: 128,
     key: 'C Major',
@@ -17,7 +17,7 @@ export const mockTracks: Track[] = [
   {
     id: 'track-2',
     title: 'Calm Piano Journey',
-    artist: 'Brandmusic Studio',
+    artist: 'SONAR Studio',
     duration: 210,
     bpm: 90,
     key: 'A Minor',
@@ -30,7 +30,7 @@ export const mockTracks: Track[] = [
   {
     id: 'track-3',
     title: 'Tech Startup Energy',
-    artist: 'Brandmusic Studio',
+    artist: 'SONAR Studio',
     duration: 195,
     bpm: 140,
     key: 'D Major',
@@ -43,7 +43,7 @@ export const mockTracks: Track[] = [
   {
     id: 'track-4',
     title: 'Acoustic Brand Story',
-    artist: 'Brandmusic Studio',
+    artist: 'SONAR Studio',
     duration: 165,
     bpm: 85,
     key: 'G Major',
@@ -56,7 +56,7 @@ export const mockTracks: Track[] = [
   {
     id: 'track-5',
     title: 'Cinematic Drama',
-    artist: 'Brandmusic Studio',
+    artist: 'SONAR Studio',
     duration: 240,
     bpm: 100,
     key: 'E Minor',
@@ -69,7 +69,7 @@ export const mockTracks: Track[] = [
   {
     id: 'track-6',
     title: 'Funky Product Launch',
-    artist: 'Brandmusic Studio',
+    artist: 'SONAR Studio',
     duration: 175,
     bpm: 115,
     key: 'F Major',

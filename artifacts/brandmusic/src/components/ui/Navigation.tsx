@@ -11,7 +11,7 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-14">
           <Link href="/" className="flex items-center gap-2">
             <span className="font-display text-[15px] font-semibold tracking-tight text-[var(--color-text-primary)]">
-              brandmusic
+              SONAR
             </span>
             <span className="mono text-[10px] uppercase tracking-[0.18em] text-[var(--color-text-tertiary)] border border-[var(--color-border-default)] rounded px-1.5 py-0.5">
               beta

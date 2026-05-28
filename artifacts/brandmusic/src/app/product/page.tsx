@@ -94,7 +94,7 @@ const features = [
   {
     icon: Zap,
     title: 'API Access',
-    description: 'Integrate Brandmusic into your workflow',
+    description: 'Integrate SONAR into your workflow',
     details: [
       'REST API for programmatic access',
       'Webhook support for real-time updates',

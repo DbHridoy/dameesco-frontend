@@ -209,7 +209,7 @@ export default function EnterprisePage() {
               Trusted by Leading Brands
             </h2>
             <p className="text-lg text-white/60 max-w-2xl mx-auto">
-              Join hundreds of agencies, networks, and enterprises using BrandMusic
+              Join hundreds of agencies, networks, and enterprises using SONAR
             </p>
           </div>
 
@@ -241,7 +241,7 @@ export default function EnterprisePage() {
                 Ready to Transform Your Workflow?
               </h2>
               <p className="text-lg text-white/70 mb-8 max-w-2xl mx-auto">
-                Schedule a personalized demo with our team to see how BrandMusic can scale with your organization.
+                Schedule a personalized demo with our team to see how SONAR can scale with your organization.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" className="bg-gradient-to-r from-electric-blue to-electric-purple hover:shadow-xl hover:shadow-electric-blue/30">

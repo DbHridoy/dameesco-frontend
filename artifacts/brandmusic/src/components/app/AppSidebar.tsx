@@ -74,7 +74,7 @@ export default function AppSidebar() {
             </div>
             <div>
               <h1 className="font-display font-bold text-lg group-hover:text-electric-blue transition-colors">
-                Brandmusic
+                SONAR
               </h1>
               <p className="text-xs text-text-tertiary">AI Sound OS</p>
             </div>
