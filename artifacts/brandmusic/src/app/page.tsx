@@ -38,7 +38,7 @@ const steps = [
 ]
 
 const proof = [
-  '3,000 Cleared Tracks',
+  '50,000 Tracks',
   'Stems',
   'Video sync preview',
 ]
