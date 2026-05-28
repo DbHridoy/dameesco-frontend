@@ -244,7 +244,7 @@ export default function Home() {
                 eyebrow: 'AI Discovery',
                 title: 'AI Search',
                 description:
-                  'Our model understands briefs like "confident but not aggressive" or "warm, nostalgic, with forward momentum." Describe what you need; skip the scrolling.',
+                  'Describe a scene, a feeling, a direction. Speak to our AI model like you would speak to a music supervisor.',
                 bullets: [
                   'Natural-language queries',
                   'Context-aware recommendations',
