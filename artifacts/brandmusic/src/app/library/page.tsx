@@ -643,7 +643,6 @@ export default function LibraryPage() {
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex items-baseline justify-between mb-4">
             <h2 className="text-[14px] font-medium text-[var(--color-text-primary)] flex items-center gap-2">
-              <Sparkles className="w-3.5 h-3.5 text-[var(--color-accent)]" />
               AI matches
               <span className="text-[12px] text-[var(--color-text-tertiary)] font-normal">
                 for "{committedQuery}"
