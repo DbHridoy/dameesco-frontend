@@ -1112,8 +1112,8 @@ export default function LibraryPage() {
       {/* License modal */}
       {licenseTrack && (() => {
         const mediaOptions = [
-          'TV', 'Paid social', 'Organic social', 'YouTube', 'TikTok', 'Instagram',
-          'Radio', 'Cinema', 'OOH', 'Website', 'Streaming', 'Podcasts',
+          'TV', 'Paid social', 'Organic social', 'All Digital Media',
+          'Radio', 'OOH', 'Website', 'Streaming', 'Podcasts',
           'In-store', 'Live events', 'Internal use',
         ]
         const terms = ['3 months', '6 months', '1 year', '2 years', 'Perpetuity']
