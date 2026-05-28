@@ -40,7 +40,7 @@ const steps = [
 const proof = [
   '3,000 Cleared Tracks',
   'Stems',
-  'Free video sync preview',
+  'Video sync preview',
 ]
 
 const stats = [
@@ -55,8 +55,8 @@ const plans = [
     name: 'Starter',
     price: '$0',
     cadence: '/ forever',
-    blurb: 'Browse the library and try free video sync.',
-    features: ['Unlimited search', 'Free video sync previews', 'Personal shortlists'],
+    blurb: 'Browse the library and try video sync.',
+    features: ['Unlimited search', 'Video sync previews', 'Personal shortlists'],
     cta: 'Browse the library',
     href: '/library',
     featured: false,
@@ -107,7 +107,7 @@ const faqs = [
     a: 'Yes — drums, bass, melody, and vocals as separated WAV files on every release. Mix to fit the brand and the media spec without going back to the composer.',
   },
   {
-    q: 'How does the free video sync preview work?',
+    q: 'How does the video sync preview work?',
     a: 'Drop an edit into the preview tool, pick a few candidate tracks, and hear them synced against your footage in the browser. Nothing leaves your machine. Share the result with stakeholders before you license.',
   },
   {
@@ -305,7 +305,7 @@ export default function Home() {
               {
                 icon: Video,
                 eyebrow: 'Video Sync',
-                title: 'Free Video Sync Preview',
+                title: 'Video Sync Preview',
                 description:
                   'Upload an edit and hear options synced against your footage — before you license. Present shortlists to clients and get approvals faster.',
                 bullets: [
