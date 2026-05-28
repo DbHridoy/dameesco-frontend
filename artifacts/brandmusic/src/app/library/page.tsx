@@ -1117,7 +1117,7 @@ export default function LibraryPage() {
           'In-store', 'Live events', 'Internal use',
         ]
         const terms = ['3 months', '6 months', '1 year', '2 years', 'Perpetuity']
-        const territories = ['U.S.', 'North America', 'Worldwide', 'Other']
+        const territories = ['U.S.', 'Worldwide', 'Other']
         const chipBase =
           'inline-flex items-center h-7 px-2.5 rounded-md text-[12px] border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent-ring)]'
         const chipOff =
