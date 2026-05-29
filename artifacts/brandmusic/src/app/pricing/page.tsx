@@ -65,8 +65,9 @@ export default function PricingPage() {
     <main className="min-h-screen bg-[var(--color-background)]">
       <Navigation />
 
-      <section className="pt-32 pb-12">
-        <div className="max-w-6xl mx-auto px-6">
+      <section className="relative pt-32 pb-12 overflow-hidden">
+        <div className="absolute inset-0 hero-glow pointer-events-none" />
+        <div className="relative z-10 max-w-6xl mx-auto px-6">
           <div className="max-w-2xl">
             <span className="mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-accent)]">
               Pricing
