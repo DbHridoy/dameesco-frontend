@@ -62,6 +62,10 @@ const faqs = [
     q: 'How does the video sync preview work?',
     a: 'Drop an edit into the preview tool, pick a few candidate tracks, and hear them synced against your footage in the browser. Nothing leaves your machine. Share the result with stakeholders before you license.',
   },
+  {
+    q: 'Is there a way for me to find similar tracks if I have a reference in mind?',
+    a: 'Yes, you can upload a YouTube or Spotify link, or search a song directly from the Spotify database to find similar tracks!',
+  },
 ]
 
 function Faq() {
