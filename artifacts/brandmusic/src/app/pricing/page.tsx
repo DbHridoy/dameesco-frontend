@@ -33,7 +33,7 @@ const plans = [
   {
     name: 'Enterprise',
     monthly: null,
-    blurb: 'For brand teams and broadcast.',
+    blurb: 'Speak with our team to discuss custom needs',
     features: [
       'Everything in Studio',
       'Custom commissions',
