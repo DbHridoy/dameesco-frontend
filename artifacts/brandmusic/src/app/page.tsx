@@ -19,18 +19,21 @@ const steps = [
   {
     n: '01',
     icon: Search,
+    color: 'var(--color-cyan)',
     title: 'Describe what you need',
     body: 'Type a brief the way you would tell a music supervisor — mood, energy, references. Plain language.',
   },
   {
     n: '02',
     icon: Waves,
+    color: 'var(--color-blue)',
     title: 'Get matched tracks',
     body: 'Our model surfaces tracks that fit the brief, with stems and licensing details inline.',
   },
   {
     n: '03',
     icon: Layers,
+    color: 'var(--color-purple)',
     title: 'Sync to your edit',
     body: 'Preview tracks against your footage, share a shortlist with stakeholders, license in one click.',
   },
@@ -110,7 +113,7 @@ export default function Home() {
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
           <h1 className="h-display text-[44px] sm:text-[56px] md:text-[64px] text-[var(--color-text-primary)]">
             Music that sounds<br />
-            like your brand.
+            like <span className="text-brand-gradient">your brand.</span>
           </h1>
 
           <p className="mt-6 text-[16px] md:text-[17px] text-[var(--color-text-secondary)] max-w-2xl mx-auto leading-relaxed">
@@ -161,10 +164,15 @@ export default function Home() {
                 className="group rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] p-6 hover:border-[var(--color-border-default)] transition-colors"
               >
                 <div className="flex items-center justify-between mb-6">
-                  <span className="mono text-[11px] tracking-[0.18em] text-[var(--color-text-tertiary)]">
+                  <span className="mono text-[11px] tracking-[0.18em]" style={{ color: s.color }}>
                     {s.n}
                   </span>
-                  <s.icon className="w-4 h-4 text-[var(--color-text-tertiary)] group-hover:text-[var(--color-accent)] transition-colors" />
+                  <span
+                    className="inline-flex items-center justify-center w-8 h-8 rounded-md border border-[var(--color-border-default)]"
+                    style={{ backgroundColor: `color-mix(in srgb, ${s.color} 12%, transparent)` }}
+                  >
+                    <s.icon className="w-4 h-4" style={{ color: s.color }} />
+                  </span>
                 </div>
                 <h3 className="text-[15px] font-medium text-[var(--color-text-primary)] mb-2">
                   {s.title}
@@ -197,6 +205,7 @@ export default function Home() {
             {[
               {
                 icon: Search,
+                color: 'var(--color-cyan)',
                 eyebrow: 'AI Discovery',
                 title: 'AI Search',
                 description:
@@ -211,6 +220,7 @@ export default function Home() {
               },
               {
                 icon: Video,
+                color: 'var(--color-purple)',
                 eyebrow: 'Video Sync',
                 title: 'Video Sync Preview',
                 description:
@@ -225,6 +235,7 @@ export default function Home() {
               },
               {
                 icon: Sliders,
+                color: 'var(--color-magenta)',
                 eyebrow: 'Stems',
                 title: 'Stem Access',
                 description:
@@ -241,8 +252,11 @@ export default function Home() {
                 >
                   <div className={reverse ? 'lg:order-2' : ''}>
                     <div className="flex items-center gap-3 mb-5">
-                      <div className="w-9 h-9 rounded-md border border-[var(--color-border-default)] bg-[var(--color-surface)] flex items-center justify-center">
-                        <f.icon className="w-4 h-4 text-[var(--color-accent)]" />
+                      <div
+                        className="w-9 h-9 rounded-md border border-[var(--color-border-default)] flex items-center justify-center"
+                        style={{ backgroundColor: `color-mix(in srgb, ${f.color} 12%, transparent)` }}
+                      >
+                        <f.icon className="w-4 h-4" style={{ color: f.color }} />
                       </div>
                       <span className="mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-text-tertiary)]">
                         {f.eyebrow} · {String(idx + 1).padStart(2, '0')}

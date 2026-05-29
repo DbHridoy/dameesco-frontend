@@ -447,7 +447,7 @@ export default function LibraryPage() {
             Library
           </span>
           <h1 className="h-display text-[44px] sm:text-[56px] md:text-[60px] mt-4">
-            Browse music.
+            Browse <span className="text-brand-gradient">music.</span>
           </h1>
           <p className="mt-4 text-[15px] text-[var(--color-text-secondary)] max-w-xl mx-auto">
             Describe what you need — mood, energy, references — the way you'd brief a music supervisor.

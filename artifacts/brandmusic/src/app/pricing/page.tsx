@@ -134,7 +134,7 @@ export default function PricingPage() {
                     {p.name}
                   </span>
                   {p.featured && (
-                    <span className="mono text-[10px] uppercase tracking-[0.18em] text-[var(--color-accent)]">
+                    <span className="mono text-[10px] uppercase tracking-[0.18em] text-brand-gradient">
                       Popular
                     </span>
                   )}

@@ -16,16 +16,26 @@
   --color-border-default: #2A2A2E;
   --color-border-strong: #3A3A3F;
 
-  /* Single accent — refined blue (Linear/Vercel territory) */
+  /* Primary accent — refined blue (Linear/Vercel territory) */
   --color-accent: #3B82F6;
   --color-accent-hover: #60A5FA;
   --color-accent-soft: rgba(59, 130, 246, 0.10);
   --color-accent-ring: rgba(59, 130, 246, 0.35);
 
-  /* Legacy aliases (kept so any stray references still resolve to the new system) */
+  /* Brand spectrum — drawn from the "Art of Sound" waveform logo */
+  --color-cyan: #22D3EE;
+  --color-cyan-soft: rgba(34, 211, 238, 0.10);
+  --color-blue: #3B82F6;
+  --color-blue-soft: rgba(59, 130, 246, 0.10);
+  --color-purple: #8B5CF6;
+  --color-purple-soft: rgba(139, 92, 246, 0.10);
+  --color-magenta: #D946EF;
+  --color-magenta-soft: rgba(217, 70, 239, 0.10);
+
+  /* Legacy aliases now mapped to the spectrum */
   --color-electric-blue: #3B82F6;
-  --color-electric-cyan: #3B82F6;
-  --color-electric-purple: #3B82F6;
+  --color-electric-cyan: #22D3EE;
+  --color-electric-purple: #8B5CF6;
   --color-text-primary-alt: #F5F5F7;
 
   /* Type */
@@ -86,14 +96,33 @@ body {
   background-size: 180px 180px;
 }
 
-/* Single soft accent glow for the hero only */
+/* Multi-color brand glow for the hero — cyan → blue → purple → magenta */
 .hero-glow {
-  background: radial-gradient(
-    ellipse 55% 50% at 50% 35%,
-    rgba(59, 130, 246, 0.10) 0%,
-    rgba(59, 130, 246, 0.04) 35%,
-    transparent 70%
-  );
+  background:
+    radial-gradient(ellipse 42% 44% at 30% 30%, rgba(34, 211, 238, 0.10) 0%, transparent 70%),
+    radial-gradient(ellipse 48% 46% at 52% 36%, rgba(59, 130, 246, 0.10) 0%, transparent 72%),
+    radial-gradient(ellipse 44% 44% at 72% 32%, rgba(139, 92, 246, 0.09) 0%, transparent 70%),
+    radial-gradient(ellipse 38% 40% at 86% 40%, rgba(217, 70, 239, 0.07) 0%, transparent 70%);
+}
+
+/* Brand gradient text — cyan → blue → purple → magenta.
+   Solid fallback first; transparent clip only where supported. */
+.text-brand-gradient {
+  color: #6AA6FF;
+}
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .text-brand-gradient {
+    background: linear-gradient(90deg, #22D3EE 0%, #3B82F6 38%, #8B5CF6 68%, #D946EF 100%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+}
+
+/* Brand gradient rule / divider */
+.brand-gradient-bar {
+  background: linear-gradient(90deg, #22D3EE 0%, #3B82F6 38%, #8B5CF6 68%, #D946EF 100%);
 }
 
 /* Subtle grid background — used selectively */

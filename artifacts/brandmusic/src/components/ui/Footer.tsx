@@ -3,7 +3,7 @@ export default function Footer() {
     <footer className="border-t border-[var(--color-border-subtle)] bg-[var(--color-background)]">
       <div className="max-w-6xl mx-auto px-6 py-10">
         <div className="flex items-center gap-2">
-          <span className="font-display text-[15px] font-semibold tracking-tight text-[var(--color-text-primary)]">
+          <span className="font-display text-[15px] font-semibold tracking-tight text-brand-gradient">
             SONAR
           </span>
           <span className="text-[13px] text-[var(--color-text-tertiary)]">

@@ -10,7 +10,7 @@ export default function Navigation() {
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex items-center justify-between h-14">
           <div className="flex items-center gap-2">
-            <span className="font-display text-[15px] font-semibold tracking-tight text-[var(--color-text-primary)]">
+            <span className="font-display text-[15px] font-semibold tracking-tight text-brand-gradient">
               SONAR
             </span>
             <span className="mono text-[10px] uppercase tracking-[0.18em] text-[var(--color-text-tertiary)] border border-[var(--color-border-default)] rounded px-1.5 py-0.5">
