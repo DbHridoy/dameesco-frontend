@@ -30,26 +30,11 @@ const plans = [
     href: '/library',
     featured: true,
   },
-  {
-    name: 'Enterprise',
-    monthly: null,
-    blurb: 'Speak with our team to discuss custom needs',
-    features: [
-      'Everything in Studio',
-      'Custom commissions',
-      'Sonic branding workshops',
-      'Dedicated account team',
-    ],
-    cta: 'Start Searching',
-    href: '/library',
-    featured: false,
-  },
 ] as const
 
 const ANNUAL_DISCOUNT = 0.2
 
 function priceFor(plan: (typeof plans)[number], billing: Billing) {
-  if (plan.monthly === null) return { price: 'Custom', cadence: '' }
   if (plan.monthly === 0) return { price: '$0', cadence: '/ forever' }
   if (billing === 'annual') {
     const perSeatMonthly = Math.round(plan.monthly * (1 - ANNUAL_DISCOUNT))
@@ -117,8 +102,8 @@ export default function PricingPage() {
       </section>
 
       <section className="pb-24">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid md:grid-cols-3 gap-3">
+        <div className="max-w-3xl mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-3">
             {plans.map((p) => {
               const { price, cadence } = priceFor(p, billing)
               return (
