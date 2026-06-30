@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'wouter'
 import { Menu, X } from 'lucide-react'
+import sunarLogo from '@/assets/sunar-logo.png'
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
@@ -10,9 +11,9 @@ export default function Navigation() {
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex items-center justify-between h-14">
           <div className="flex items-center gap-2">
-            <span className="font-display text-[15px] font-semibold tracking-tight text-[var(--color-text-primary)]">
-              SONAR
-            </span>
+            <Link href="/" aria-label="SUNAR home" className="flex items-center">
+              <img src={sunarLogo} alt="SUNAR" className="h-5 w-auto" />
+            </Link>
             <span className="mono text-[10px] uppercase tracking-[0.18em] text-[var(--color-text-tertiary)] border border-[var(--color-border-default)] rounded px-1.5 py-0.5">
               beta
             </span>
