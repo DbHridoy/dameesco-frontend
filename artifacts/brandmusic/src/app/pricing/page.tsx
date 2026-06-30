@@ -27,7 +27,7 @@ const plans = [
       'Shared team shortlists',
       'Remove watermarks',
     ],
-    cta: 'Start Searching',
+    cta: 'Send Request',
     href: '/library',
     featured: true,
   },
