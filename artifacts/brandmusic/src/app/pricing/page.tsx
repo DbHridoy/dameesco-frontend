@@ -167,6 +167,13 @@ export default function PricingPage() {
             <p className="mt-4 text-[15px] text-[var(--color-text-secondary)] leading-relaxed max-w-2xl mx-auto">
               You can still license individual tracks without a monthly plan. Search the catalog, find the right sound, and license music on a project-by-project basis whenever you need it.
             </p>
+            <div className="mt-6 flex justify-center">
+              <Link href="/library">
+                <Button size="md" variant="outline">
+                  Search the Catalog
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
