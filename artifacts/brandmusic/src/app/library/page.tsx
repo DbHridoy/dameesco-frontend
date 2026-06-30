@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'wouter'
 import Navigation from '@/components/ui/Navigation'
 import Footer from '@/components/ui/Footer'
 import Button from '@/components/ui/Button'
@@ -359,6 +360,8 @@ export default function LibraryPage() {
   const [licenseForm, setLicenseForm] = useState<LicenseForm>(emptyLicenseForm)
   const [licenseSubmitted, setLicenseSubmitted] = useState(false)
 
+  const [downloadOpen, setDownloadOpen] = useState(false)
+
   const openLicense = (track: Track) => {
     setLicenseTrack(track)
     setLicenseForm(emptyLicenseForm)
@@ -646,6 +649,7 @@ export default function LibraryPage() {
                     <div className="flex items-center gap-1.5 flex-shrink-0">
                       <button
                         type="button"
+                        onClick={() => setDownloadOpen(true)}
                         aria-label={`Download ${track.title}`}
                         title="Download preview"
                         className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-md text-[12px] border border-[var(--color-border-subtle)] bg-[var(--color-surface)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-default)] hover:text-[var(--color-text-primary)] transition-colors"
@@ -801,6 +805,7 @@ export default function LibraryPage() {
                   <div className="flex items-center gap-1.5 flex-shrink-0">
                     <button
                       type="button"
+                      onClick={() => setDownloadOpen(true)}
                       aria-label={`Download ${track.title}`}
                       title="Download preview"
                       className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-md text-[12px] border border-[var(--color-border-subtle)] bg-[var(--color-surface)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-default)] hover:text-[var(--color-text-primary)] transition-colors"
@@ -968,6 +973,7 @@ export default function LibraryPage() {
                   <div className="flex items-center gap-1.5 flex-shrink-0">
                     <button
                       type="button"
+                      onClick={() => setDownloadOpen(true)}
                       aria-label={`Download ${track.title}`}
                       title="Download preview"
                       className="inline-flex items-center justify-center w-8 h-8 rounded-md border border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-default)] hover:text-[var(--color-text-primary)] transition-colors"
@@ -1530,6 +1536,62 @@ export default function LibraryPage() {
                 </Button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {downloadOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="download-title"
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+        >
+          <div
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            onClick={() => setDownloadOpen(false)}
+            aria-hidden="true"
+          />
+          <div className="relative w-full max-w-md rounded-lg border border-[var(--color-border-default)] bg-[var(--color-surface-elevated)] shadow-2xl">
+            <button
+              type="button"
+              onClick={() => setDownloadOpen(false)}
+              aria-label="Close"
+              className="absolute top-3 right-3 inline-flex items-center justify-center w-7 h-7 rounded-md text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] hover:bg-white/[0.04] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent-ring)] transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            <div className="p-8 flex flex-col items-center text-center">
+              <div className="w-10 h-10 rounded-full border border-[var(--color-border-default)] bg-[var(--color-accent-soft)] flex items-center justify-center mb-4">
+                <Download className="w-4 h-4 text-[var(--color-accent)]" />
+              </div>
+              <h2
+                id="download-title"
+                className="text-[15px] font-medium text-[var(--color-text-primary)]"
+              >
+                Your download will start shortly.
+              </h2>
+              <p className="mt-2 text-[13px] text-[var(--color-text-secondary)] leading-relaxed max-w-xs">
+                Upgrade to the Studio Tier to remove the watermark and access stems instantly.
+              </p>
+              <div className="mt-6 flex items-center gap-2.5">
+                <Link
+                  href="/pricing"
+                  onClick={() => setDownloadOpen(false)}
+                  className="inline-flex items-center gap-1.5 h-9 px-4 rounded-md text-[13px] font-medium bg-[var(--color-accent)] text-white hover:opacity-90 transition-opacity"
+                >
+                  Upgrade to Studio
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setDownloadOpen(false)}
+                  className="inline-flex items-center h-9 px-4 rounded-md text-[13px] border border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-default)] hover:text-[var(--color-text-primary)] transition-colors"
+                >
+                  Not now
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
