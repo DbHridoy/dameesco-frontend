@@ -17,21 +17,18 @@ import stemAccessImage from '@assets/Nano_Banana_2_-_virtual_control_on_an_audio
 
 const steps = [
   {
-    n: '01',
     icon: Search,
     color: 'var(--color-accent)',
     title: 'Describe what you need',
     body: 'Type a brief the way you would tell a music supervisor — mood, energy, references. Plain language.',
   },
   {
-    n: '02',
     icon: Waves,
     color: 'var(--color-accent)',
     title: 'Get matched tracks',
     body: 'Our model surfaces tracks that fit the brief, with stems and licensing details inline.',
   },
   {
-    n: '03',
     icon: Layers,
     color: 'var(--color-accent)',
     title: 'Sync to your edit',
@@ -160,13 +157,10 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-4">
             {steps.map((s) => (
               <div
-                key={s.n}
+                key={s.title}
                 className="group rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] p-6 hover:border-[var(--color-border-default)] transition-colors"
               >
-                <div className="flex items-center justify-between mb-6">
-                  <span className="mono text-[11px] tracking-[0.18em]" style={{ color: s.color }}>
-                    {s.n}
-                  </span>
+                <div className="flex items-center justify-center mb-6">
                   <span
                     className="inline-flex items-center justify-center w-8 h-8 rounded-md border border-[var(--color-border-default)]"
                     style={{ backgroundColor: `color-mix(in srgb, ${s.color} 12%, transparent)` }}
