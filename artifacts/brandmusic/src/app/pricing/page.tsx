@@ -48,7 +48,7 @@ export default function PricingPage() {
   const [billing, setBilling] = useState<Billing>('monthly')
 
   return (
-    <main className="min-h-screen bg-[var(--color-background)]">
+    <main className="min-h-screen text-[var(--color-text-primary)]">
       <Navigation />
 
       <section className="relative pt-32 pb-12 overflow-hidden">
