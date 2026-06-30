@@ -25,6 +25,7 @@ const plans = [
       'Everything in Starter',
       'Stems on every track',
       'Shared team shortlists',
+      'Remove watermarks',
     ],
     cta: 'Start Searching',
     href: '/library',
