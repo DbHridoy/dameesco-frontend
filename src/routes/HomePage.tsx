@@ -12,7 +12,6 @@ import {
 import Navigation from '@/components/ui/Navigation'
 import Footer from '@/components/ui/Footer'
 import Button from '@/components/ui/Button'
-import { mockTracks } from '@/data/mockTracks'
 import stemAccessImage from '@/assets/stem-access.png'
 
 const steps = [

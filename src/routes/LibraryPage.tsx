@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'wouter'
+import { skipToken } from '@reduxjs/toolkit/query'
 import Navigation from '@/components/ui/Navigation'
 import Footer from '@/components/ui/Footer'
 import Button from '@/components/ui/Button'
+import AuthModal from '@/components/ui/AuthModal'
 import {
   Search,
   Play,
@@ -19,8 +21,15 @@ import {
   Link2,
   Disc3,
 } from 'lucide-react'
-import { mockTracks } from '@/data/mockTracks'
-import type { Track } from '@/types/track'
+import { useAppSelector } from '@/hooks/redux'
+import {
+  useGetFeaturedSongsQuery,
+  useGetSongsQuery,
+  useRequestDownloadMutation,
+  useRequestLicenseMutation,
+  useSearchSongsQuery,
+} from '@/services/api'
+import type { Track } from '@/types/api'
 
 type Lex = { keys: string[]; moods?: string[]; genres?: string[]; energy?: 'high' | 'low' }
 const lexicon: Lex[] = [
@@ -248,11 +257,13 @@ function waveformBars(seed: string, count = 140): number[] {
 }
 
 export default function LibraryPage() {
+  const user = useAppSelector((state) => state.auth.user)
   const [searchQuery, setSearchQuery] = useState('')
   const [committedQuery, setCommittedQuery] = useState('')
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [selectedCollection, setSelectedCollection] = useState<string | null>(null)
   const collectionResultsRef = useRef<HTMLDivElement | null>(null)
+  const [authOpen, setAuthOpen] = useState(false)
 
   const [linkModalOpen, setLinkModalOpen] = useState(false)
   const [refLink, setRefLink] = useState('')
@@ -326,8 +337,21 @@ export default function LibraryPage() {
   const activeCollection = selectedCollection
     ? playlists.find((c) => c.title === selectedCollection) ?? null
     : null
+  const [requestLicense, { isLoading: submittingLicense }] = useRequestLicenseMutation()
+  const [requestDownload, { isLoading: requestingDownload }] = useRequestDownloadMutation()
+  const { data: catalogData, isLoading: loadingCatalog } = useGetSongsQuery({
+    page: 1,
+    limit: 100,
+  })
+  const { data: featuredTracks = [] } = useGetFeaturedSongsQuery()
+  const { data: searchData } = useSearchSongsQuery(
+    committedQuery.trim()
+      ? { q: committedQuery, page: 1, limit: 100 }
+      : skipToken,
+  )
+  const allTracks = catalogData?.tracks ?? []
   const collectionTracks = activeCollection
-    ? mockTracks.filter((t) => activeCollection.match(t))
+    ? allTracks.filter((t) => activeCollection.match(t))
     : []
   const [syncOpen, setSyncOpen] = useState(false)
   const [syncFile, setSyncFile] = useState<File | null>(null)
@@ -359,18 +383,82 @@ export default function LibraryPage() {
   const [licenseTrack, setLicenseTrack] = useState<Track | null>(null)
   const [licenseForm, setLicenseForm] = useState<LicenseForm>(emptyLicenseForm)
   const [licenseSubmitted, setLicenseSubmitted] = useState(false)
+  const [licenseError, setLicenseError] = useState('')
 
   const [downloadOpen, setDownloadOpen] = useState(false)
+  const [downloadTrack, setDownloadTrack] = useState<Track | null>(null)
+  const [downloadMessage, setDownloadMessage] = useState('')
+  const [downloadError, setDownloadError] = useState('')
 
   const openLicense = (track: Track) => {
+    if (!user) {
+      setAuthOpen(true)
+      return
+    }
     setLicenseTrack(track)
     setLicenseForm(emptyLicenseForm)
     setLicenseSubmitted(false)
+    setLicenseError('')
   }
   const closeLicense = () => {
     setLicenseTrack(null)
     setLicenseSubmitted(false)
+    setLicenseError('')
   }
+  const handleLicenseSubmit = async () => {
+    if (!licenseTrack || !user || !licenseValid) return
+
+    setLicenseError('')
+
+    try {
+      await requestLicense({
+        song: licenseTrack.id,
+        fullName: licenseForm.fullName,
+        email: user.email,
+        companyName: licenseForm.agencyName,
+        projectName: licenseForm.brand,
+        usageType: licenseForm.media.join(', '),
+        usageDescription: [
+          `Term: ${licenseForm.term}`,
+          `Territory: ${
+            licenseForm.territory === 'Other'
+              ? licenseForm.territoryOther
+              : licenseForm.territory
+          }`,
+          `Exclusivity: ${
+            licenseForm.exclusivity === 'exclusive'
+              ? `Exclusive (${licenseForm.exclusivityCategory})`
+              : 'Non-exclusive'
+          }`,
+        ].join(' | '),
+      }).unwrap()
+
+      setLicenseSubmitted(true)
+    } catch (apiError: any) {
+      setLicenseError(apiError?.data?.message ?? 'Unable to submit the license request')
+    }
+  }
+
+  const handleDownload = async (track: Track) => {
+    if (!user) {
+      setAuthOpen(true)
+      return
+    }
+
+    setDownloadTrack(track)
+    setDownloadMessage('')
+    setDownloadError('')
+    setDownloadOpen(true)
+
+    try {
+      const download = await requestDownload(track.id).unwrap()
+      setDownloadMessage('Your download is ready. It will open in a new tab.')
+      window.open(download.downloadUrl, '_blank', 'noopener,noreferrer')
+    } catch (apiError: any) {
+      setDownloadError(apiError?.data?.message ?? 'Unable to prepare the download')
+    }
+  }
+
   const toggleMedia = (m: string) => {
     setLicenseForm((f) => ({
       ...f,
@@ -412,7 +500,9 @@ export default function LibraryPage() {
   }
 
   const hasQuery = committedQuery.trim().length > 0
-  const scored = mockTracks.map((track) => ({
+  const searchTracks = searchData?.tracks ?? []
+  const searchSource = hasQuery ? searchTracks : allTracks
+  const scored = searchSource.map((track) => ({
     track,
     match: scoreTrack(track, committedQuery),
   }))
@@ -435,6 +525,11 @@ export default function LibraryPage() {
   return (
     <main className="min-h-screen text-[var(--color-text-primary)]">
       <Navigation />
+      <AuthModal
+        open={authOpen}
+        onClose={() => setAuthOpen(false)}
+        title="Sign in to access licenses and downloads"
+      />
 
       {/* Header */}
       <section className="relative pt-32 pb-12 overflow-hidden">
@@ -649,7 +744,7 @@ export default function LibraryPage() {
                     <div className="flex items-center gap-1.5 flex-shrink-0">
                       <button
                         type="button"
-                        onClick={() => setDownloadOpen(true)}
+                        onClick={() => handleDownload(track)}
                         aria-label={`Download ${track.title}`}
                         title="Download preview"
                         className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-md text-[12px] border border-[var(--color-border-subtle)] bg-[var(--color-surface)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-default)] hover:text-[var(--color-text-primary)] transition-colors"
@@ -805,7 +900,7 @@ export default function LibraryPage() {
                   <div className="flex items-center gap-1.5 flex-shrink-0">
                     <button
                       type="button"
-                      onClick={() => setDownloadOpen(true)}
+                      onClick={() => handleDownload(track)}
                       aria-label={`Download ${track.title}`}
                       title="Download preview"
                       className="inline-flex items-center gap-1.5 h-8 px-2.5 rounded-md text-[12px] border border-[var(--color-border-subtle)] bg-[var(--color-surface)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-default)] hover:text-[var(--color-text-primary)] transition-colors"
@@ -897,7 +992,7 @@ export default function LibraryPage() {
             </span>
           </div>
           <div className="rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-surface)] divide-y divide-[var(--color-border-subtle)] overflow-hidden">
-            {mockTracks.slice(0, 7).map((track) => {
+            {(featuredTracks.length > 0 ? featuredTracks : allTracks).slice(0, 7).map((track) => {
               const bars = waveformBars(track.id)
               return (
                 <div
@@ -973,7 +1068,7 @@ export default function LibraryPage() {
                   <div className="flex items-center gap-1.5 flex-shrink-0">
                     <button
                       type="button"
-                      onClick={() => setDownloadOpen(true)}
+                      onClick={() => handleDownload(track)}
                       aria-label={`Download ${track.title}`}
                       title="Download preview"
                       className="inline-flex items-center justify-center w-8 h-8 rounded-md border border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-default)] hover:text-[var(--color-text-primary)] transition-colors"
@@ -1366,6 +1461,9 @@ export default function LibraryPage() {
                         className={inputCls}
                       />
                     </div>
+                    {licenseError ? (
+                      <p className="mt-3 text-[12px] text-red-400">{licenseError}</p>
+                    ) : null}
                   </div>
 
                   <div className="flex items-center justify-between gap-3 px-5 py-4 border-t border-[var(--color-border-subtle)] flex-shrink-0">
@@ -1378,11 +1476,13 @@ export default function LibraryPage() {
                     </button>
                     <Button
                       size="sm"
-                      disabled={!licenseValid}
-                      onClick={() => setLicenseSubmitted(true)}
+                      disabled={!licenseValid || submittingLicense}
+                      onClick={handleLicenseSubmit}
                     >
-                      Submit request
-                      <ArrowRight className="ml-1.5 w-3.5 h-3.5" />
+                      {submittingLicense ? 'Submitting…' : 'Submit request'}
+                      {submittingLicense ? null : (
+                        <ArrowRight className="ml-1.5 w-3.5 h-3.5" />
+                      )}
                     </Button>
                   </div>
                 </>
@@ -1569,26 +1669,34 @@ export default function LibraryPage() {
                 id="download-title"
                 className="text-[15px] font-medium text-[var(--color-text-primary)]"
               >
-                Your download will start shortly.
+                {requestingDownload
+                  ? 'Preparing your download…'
+                  : downloadTrack
+                    ? `Download "${downloadTrack.title}"`
+                    : 'Download track'}
               </h2>
               <p className="mt-2 text-[13px] text-[var(--color-text-secondary)] leading-relaxed max-w-xs">
-                Upgrade to the Studio Tier to remove the watermark and access stems instantly.
+                {downloadError
+                  ? downloadError
+                  : downloadMessage || 'We are requesting the download from the backend now.'}
               </p>
               <div className="mt-6 flex items-center gap-2.5">
-                <Link
-                  href="/pricing"
-                  onClick={() => setDownloadOpen(false)}
-                  className="inline-flex items-center gap-1.5 h-9 px-4 rounded-md text-[13px] font-medium bg-[var(--color-accent)] text-white hover:opacity-90 transition-opacity"
-                >
-                  Upgrade to Studio
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+                {downloadError ? (
+                  <Link
+                    href="/pricing"
+                    onClick={() => setDownloadOpen(false)}
+                    className="inline-flex items-center gap-1.5 h-9 px-4 rounded-md text-[13px] font-medium bg-[var(--color-accent)] text-white hover:opacity-90 transition-opacity"
+                  >
+                    View pricing
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                ) : null}
                 <button
                   type="button"
                   onClick={() => setDownloadOpen(false)}
                   className="inline-flex items-center h-9 px-4 rounded-md text-[13px] border border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-default)] hover:text-[var(--color-text-primary)] transition-colors"
                 >
-                  Not now
+                  Close
                 </button>
               </div>
             </div>
