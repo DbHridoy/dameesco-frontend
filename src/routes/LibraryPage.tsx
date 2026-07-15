@@ -343,7 +343,7 @@ export default function LibraryPage() {
     page: 1,
     limit: 100,
   })
-  const { data: featuredTracks = [] } = useGetFeaturedSongsQuery()
+  const { data: featuredTracks = [] } = useGetFeaturedSongsQuery(undefined)
   const { data: searchData } = useSearchSongsQuery(
     committedQuery.trim()
       ? { q: committedQuery, page: 1, limit: 100 }

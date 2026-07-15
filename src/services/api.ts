@@ -22,6 +22,18 @@ type BackendSong = {
   slug?: string
 }
 
+type BackendUser = {
+  _id: string
+  name: string
+  email: string
+  role: 'USER' | 'ADMIN'
+  phone?: string
+  address?: string
+  avatar?: string
+  subscriptionStatus?: 'free' | 'paid'
+  subscriptionPlan?: 'free' | 'standard' | 'premium' | 'custom'
+}
+
 type BackendPlaylist = {
   _id: string
   name: string
@@ -75,10 +87,11 @@ const rawBaseQuery = fetchBaseQuery({
   },
 })
 
-const baseQuery = async (args: Parameters<typeof rawBaseQuery>[0], api: Parameters<typeof rawBaseQuery>[1], extraOptions: Parameters<typeof rawBaseQuery>[2]) => {
-  const result = await rawBaseQuery(args, api, extraOptions)
+const baseQuery = async (args: Parameters<typeof rawBaseQuery>[0], baseApi: Parameters<typeof rawBaseQuery>[1], extraOptions: Parameters<typeof rawBaseQuery>[2]) => {
+  const result = await rawBaseQuery(args, baseApi, extraOptions)
   if (result.error?.status === 401) {
-    api.dispatch(signOut())
+    baseApi.dispatch(signOut())
+    baseApi.dispatch(apiSlice.util.resetApiState())
   }
   return result
 }
@@ -103,6 +116,20 @@ export const api = createApi({
         body,
       }),
       transformResponse: (response: { data: { user: { _id: string; name: string; email: string; role: 'USER' | 'ADMIN' }; accessToken: string; refreshToken: string } }) => response.data,
+    }),
+    getCurrentUser: builder.query({
+      query: () => '/users/me',
+      transformResponse: (response: { data: { user: BackendUser } }) => response.data.user,
+      providesTags: ['Auth'],
+    }),
+    updateCurrentUser: builder.mutation({
+      query: (body: { name?: string; phone?: string; address?: string; avatar?: string }) => ({
+        url: '/users/me',
+        method: 'PATCH',
+        body,
+      }),
+      transformResponse: (response: { data: { user: BackendUser } }) => response.data.user,
+      invalidatesTags: ['Auth'],
     }),
     getSongs: builder.query({
       query: (params: { page?: number; limit?: number; search?: string; isFeatured?: boolean } = {}) => ({
@@ -162,6 +189,19 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: { downloadUrl: string; fileType: string; expiresIn: number } }) => response.data,
     }),
+    createAccessRequest: builder.mutation({
+      query: (body: {
+        requestedPlan: 'standard' | 'premium' | 'custom'
+        paymentMethod: string
+        transactionReference?: string
+        message?: string
+      }) => ({
+        url: '/access-requests',
+        method: 'POST',
+        body,
+      }),
+      transformResponse: (response: { data: { request: unknown } }) => response.data.request,
+    }),
     getMyPlaylists: builder.query({
       query: () => '/playlists/my',
       transformResponse: (response: { data: { playlists: BackendPlaylist[] } }) =>
@@ -171,13 +211,18 @@ export const api = createApi({
   }),
 })
 
+const apiSlice = api
+
 export const {
   useLoginMutation,
   useRegisterMutation,
+  useGetCurrentUserQuery,
+  useUpdateCurrentUserMutation,
   useGetSongsQuery,
   useGetFeaturedSongsQuery,
   useSearchSongsQuery,
   useRequestLicenseMutation,
   useRequestDownloadMutation,
+  useCreateAccessRequestMutation,
   useGetMyPlaylistsQuery,
 } = api

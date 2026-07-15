@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { Link } from 'wouter'
-import { Check } from 'lucide-react'
+import { Check, Loader2, X } from 'lucide-react'
 import Navigation from '@/components/ui/Navigation'
 import Footer from '@/components/ui/Footer'
 import Button from '@/components/ui/Button'
+import AuthModal from '@/components/ui/AuthModal'
+import { useAppSelector } from '@/hooks/redux'
+import { useCreateAccessRequestMutation } from '@/services/api'
 
 type Billing = 'monthly' | 'annual'
 
@@ -46,10 +49,41 @@ function priceFor(plan: (typeof plans)[number], billing: Billing) {
 
 export default function PricingPage() {
   const [billing, setBilling] = useState<Billing>('monthly')
+  const [requestSuccessOpen, setRequestSuccessOpen] = useState(false)
+  const [authOpen, setAuthOpen] = useState(false)
+  const [requestError, setRequestError] = useState('')
+  const user = useAppSelector((state) => state.auth.user)
+  const [createAccessRequest, { isLoading: submittingRequest }] =
+    useCreateAccessRequestMutation()
+
+  const submitStudioRequest = async () => {
+    setRequestError('')
+
+    if (!user) {
+      setAuthOpen(true)
+      return
+    }
+
+    try {
+      await createAccessRequest({
+        requestedPlan: 'premium',
+        paymentMethod: 'pricing_page_request',
+        message: `Studio plan request from pricing page (${billing} billing).`,
+      }).unwrap()
+      setRequestSuccessOpen(true)
+    } catch (apiError: any) {
+      setRequestError(apiError?.data?.message ?? 'Unable to send request')
+    }
+  }
 
   return (
     <main className="min-h-screen text-[var(--color-text-primary)]">
       <Navigation />
+      <AuthModal
+        open={authOpen}
+        onClose={() => setAuthOpen(false)}
+        title="Sign in to request Studio"
+      />
 
       <section className="relative pt-32 pb-12 overflow-hidden">
         <div className="absolute inset-0 hero-glow pointer-events-none" />
@@ -143,15 +177,31 @@ export default function PricingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link href={p.href}>
-                  <Button
-                    size="md"
-                    variant={p.featured ? 'primary' : 'outline'}
-                    fullWidth
-                  >
-                    {p.cta}
-                  </Button>
-                </Link>
+	                {p.featured ? (
+                    <Button
+                      size="md"
+                      variant="primary"
+                      fullWidth
+                      onClick={submitStudioRequest}
+                      disabled={submittingRequest}
+                    >
+                      {submittingRequest ? (
+                        <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                      ) : null}
+                      {p.cta}
+                    </Button>
+                  ) : (
+                    <Link href={p.href}>
+                      <Button size="md" variant="outline" fullWidth>
+                        {p.cta}
+                      </Button>
+                    </Link>
+                  )}
+                  {p.featured && requestError ? (
+                    <p className="mt-3 text-center text-[12px] text-red-400">
+                      {requestError}
+                    </p>
+                  ) : null}
               </div>
               )
             })}
@@ -178,7 +228,50 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <Footer />
-    </main>
-  )
-}
+	      <Footer />
+
+        {requestSuccessOpen ? (
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="pricing-request-title"
+            className="fixed inset-0 z-[70] flex items-center justify-center p-4"
+          >
+            <div
+              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+              onClick={() => setRequestSuccessOpen(false)}
+              aria-hidden="true"
+            />
+            <div className="relative w-full max-w-md rounded-lg border border-[var(--color-border-default)] bg-[var(--color-surface-elevated)] p-7 text-center shadow-2xl">
+              <button
+                type="button"
+                onClick={() => setRequestSuccessOpen(false)}
+                aria-label="Close"
+                className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-md text-[var(--color-text-tertiary)] transition-colors hover:bg-white/[0.04] hover:text-[var(--color-text-primary)]"
+              >
+                <X className="h-4 w-4" />
+              </button>
+
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-[var(--color-border-default)] bg-[var(--color-accent-soft)]">
+                <Check className="h-5 w-5 text-[var(--color-accent)]" />
+              </div>
+              <h2
+                id="pricing-request-title"
+                className="mt-5 text-[18px] font-medium text-[var(--color-text-primary)]"
+              >
+                Request sent successfully
+              </h2>
+              <p className="mx-auto mt-2 max-w-xs text-[13px] leading-relaxed text-[var(--color-text-secondary)]">
+                We received your Studio plan request. Our team will review it and contact you shortly.
+              </p>
+              <div className="mt-6">
+                <Button size="md" onClick={() => setRequestSuccessOpen(false)}>
+                  Done
+                </Button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+	    </main>
+	  )
+	}

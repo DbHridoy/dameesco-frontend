@@ -7,6 +7,11 @@ type AuthUser = {
   name: string
   email: string
   role: 'USER' | 'ADMIN'
+  phone?: string
+  address?: string
+  avatar?: string
+  subscriptionStatus?: 'free' | 'paid'
+  subscriptionPlan?: 'free' | 'standard' | 'premium' | 'custom'
 }
 
 type AuthState = {
@@ -70,6 +75,10 @@ const authSlice = createSlice({
       state.user = action.payload.user
       persist(state)
     },
+    setUser: (state, action: PayloadAction<AuthUser>) => {
+      state.user = action.payload
+      persist(state)
+    },
     signOut: (state) => {
       state.accessToken = ''
       state.refreshToken = ''
@@ -79,5 +88,5 @@ const authSlice = createSlice({
   },
 })
 
-export const { setCredentials, signOut } = authSlice.actions
+export const { setCredentials, setUser, signOut } = authSlice.actions
 export default authSlice.reducer

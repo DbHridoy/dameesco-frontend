@@ -9,15 +9,17 @@ type AuthModalProps = {
   open: boolean
   onClose: () => void
   title?: string
+  initialMode?: 'login' | 'register'
 }
 
 export default function AuthModal({
   open,
   onClose,
   title = 'Sign in to continue',
+  initialMode = 'login',
 }: AuthModalProps) {
   const dispatch = useAppDispatch()
-  const [mode, setMode] = useState<'login' | 'register'>('login')
+  const [mode, setMode] = useState<'login' | 'register'>(initialMode)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -28,8 +30,9 @@ export default function AuthModal({
   useEffect(() => {
     if (open) {
       setError('')
+      setMode(initialMode)
     }
-  }, [open, mode])
+  }, [open, initialMode])
 
   if (!open) return null
 
