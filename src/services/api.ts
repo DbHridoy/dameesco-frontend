@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import type { RootState } from '@/app/store'
-import { signOut } from '@/features/auth/authSlice'
+import { setTokens, signOut } from '@/features/auth/authSlice'
 import type { Playlist, Track } from '@/types/api'
 
 const API_ROOT = import.meta.env.VITE_API_URL ?? 'http://localhost:5000/api/v1'
@@ -87,11 +87,56 @@ const rawBaseQuery = fetchBaseQuery({
   },
 })
 
+let refreshPromise: ReturnType<typeof rawBaseQuery> | null = null
+
 const baseQuery = async (args: Parameters<typeof rawBaseQuery>[0], baseApi: Parameters<typeof rawBaseQuery>[1], extraOptions: Parameters<typeof rawBaseQuery>[2]) => {
-  const result = await rawBaseQuery(args, baseApi, extraOptions)
+  let result = await rawBaseQuery(args, baseApi, extraOptions)
   if (result.error?.status === 401) {
-    baseApi.dispatch(signOut())
-    baseApi.dispatch(apiSlice.util.resetApiState())
+    const refreshToken = (baseApi.getState() as RootState).auth.refreshToken
+
+    if (refreshToken) {
+      if (!refreshPromise) {
+        refreshPromise = rawBaseQuery(
+          {
+            url: '/auth/refresh-token',
+            method: 'POST',
+            body: { refreshToken },
+          },
+          baseApi,
+          extraOptions,
+        ).finally(() => {
+          refreshPromise = null
+        })
+      }
+
+      const refreshResult = await refreshPromise
+
+      if (refreshResult.data && typeof refreshResult.data === 'object' && 'data' in refreshResult.data) {
+        const refreshData = refreshResult.data.data as {
+          accessToken?: string
+          refreshToken?: string
+          user?: BackendUser
+        }
+
+        if (refreshData.accessToken && refreshData.refreshToken) {
+          baseApi.dispatch(setTokens({
+            accessToken: refreshData.accessToken,
+            refreshToken: refreshData.refreshToken,
+            user: refreshData.user,
+          }))
+          result = await rawBaseQuery(args, baseApi, extraOptions)
+        } else {
+          baseApi.dispatch(signOut())
+          baseApi.dispatch(api.util.resetApiState())
+        }
+      } else {
+        baseApi.dispatch(signOut())
+        baseApi.dispatch(api.util.resetApiState())
+      }
+    } else {
+      baseApi.dispatch(signOut())
+      baseApi.dispatch(api.util.resetApiState())
+    }
   }
   return result
 }
