@@ -517,8 +517,9 @@ export default function LibraryPage() {
 
 
   const formatDuration = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
+    const totalSeconds = Math.max(0, Math.floor(seconds || 0))
+    const mins = Math.floor(totalSeconds / 60)
+    const secs = totalSeconds % 60
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
@@ -997,9 +998,9 @@ export default function LibraryPage() {
               return (
                 <div
                   key={`staff-${track.id}`}
-                  className="group flex items-center gap-4 px-4 py-3 hover:bg-white/[0.02] transition-colors"
+                  className="group grid grid-cols-[40px_minmax(120px,160px)_minmax(120px,1fr)_48px_auto] lg:grid-cols-[40px_minmax(130px,160px)_minmax(120px,1fr)_48px_minmax(0,150px)_auto] items-center gap-4 px-4 py-3 hover:bg-white/[0.02] transition-colors"
                 >
-                  <div className="relative flex-shrink-0">
+                  <div className="relative">
                     <img
                       src={track.cover_url}
                       alt={track.title}
@@ -1014,7 +1015,7 @@ export default function LibraryPage() {
                     </button>
                   </div>
 
-                  <div className="min-w-0 w-[160px] flex-shrink-0">
+                  <div className="min-w-0">
                     <div className="text-[13px] text-[var(--color-text-primary)] truncate">
                       {track.title}
                     </div>
@@ -1023,7 +1024,7 @@ export default function LibraryPage() {
                     </div>
                   </div>
 
-                  <div className="hidden md:block flex-1 min-w-0 text-[var(--color-text-tertiary)]/70 group-hover:text-[var(--color-text-secondary)] transition-colors">
+                  <div className="hidden min-w-0 overflow-hidden md:block text-[var(--color-text-tertiary)]/70 group-hover:text-[var(--color-text-secondary)] transition-colors">
                     <svg
                       viewBox={`0 0 ${bars.length * 2} 40`}
                       preserveAspectRatio="none"
@@ -1050,22 +1051,23 @@ export default function LibraryPage() {
                     </svg>
                   </div>
 
-                  <span className="mono text-[11px] text-[var(--color-text-tertiary)] flex-shrink-0 w-[40px] text-right tabular-nums">
+                  <span className="mono block overflow-hidden text-right text-[11px] tabular-nums text-[var(--color-text-tertiary)]">
                     {formatDuration(track.duration)}
                   </span>
 
-                  <div className="hidden lg:flex items-center gap-1.5 flex-shrink-0 w-[140px]">
+                  <div className="hidden lg:flex min-w-0 items-center gap-1.5 overflow-hidden">
                     {track.mood.slice(0, 2).map((m) => (
                       <span
                         key={m}
-                        className="px-2 py-0.5 rounded border border-[var(--color-border-subtle)] text-[10.5px] text-[var(--color-text-secondary)] whitespace-nowrap"
+                        className="min-w-0 truncate px-2 py-0.5 rounded border border-[var(--color-border-subtle)] text-[10.5px] text-[var(--color-text-secondary)] whitespace-nowrap"
+                        title={m}
                       >
                         {m}
                       </span>
                     ))}
                   </div>
 
-                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                  <div className="flex items-center justify-end gap-1.5">
                     <button
                       type="button"
                       onClick={() => handleDownload(track)}
