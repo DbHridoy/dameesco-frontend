@@ -8,6 +8,7 @@ import AuthModal from '@/components/ui/AuthModal'
 import {
   Search,
   Play,
+  Pause,
   Music2,
   Video,
   ArrowRight,
@@ -26,6 +27,8 @@ import {
   useGetFeaturedSongsQuery,
   useGetSongsQuery,
   useRequestDownloadMutation,
+  useRequestVideoSyncPreviewMutation,
+  useGetSongPreviewUrlMutation,
   useRequestLicenseMutation,
   useSearchSongsQuery,
 } from '@/services/api'
@@ -339,6 +342,10 @@ export default function LibraryPage() {
     : null
   const [requestLicense, { isLoading: submittingLicense }] = useRequestLicenseMutation()
   const [requestDownload, { isLoading: requestingDownload }] = useRequestDownloadMutation()
+  const [requestVideoSyncPreview, { isLoading: renderingSyncPreview }] =
+    useRequestVideoSyncPreviewMutation()
+  const [getSongPreviewUrl, { isLoading: loadingSyncAudio }] =
+    useGetSongPreviewUrlMutation()
   const { data: catalogData, isLoading: loadingCatalog } = useGetSongsQuery({
     page: 1,
     limit: 100,
@@ -350,13 +357,33 @@ export default function LibraryPage() {
       : skipToken,
   )
   const allTracks = catalogData?.tracks ?? []
+  const syncTracks = allTracks.filter((track) => track.audio_url).slice(0, 8)
   const collectionTracks = activeCollection
     ? allTracks.filter((t) => activeCollection.match(t))
     : []
   const [syncOpen, setSyncOpen] = useState(false)
   const [syncFile, setSyncFile] = useState<File | null>(null)
-  const [syncStage, setSyncStage] = useState<'idle' | 'analyzing' | 'ready'>('idle')
+  const [syncVideoUrl, setSyncVideoUrl] = useState('')
+  const [syncStage, setSyncStage] = useState<'idle' | 'ready'>('idle')
+  const [syncTrack, setSyncTrack] = useState<Track | null>(null)
+  const [syncPlaying, setSyncPlaying] = useState(false)
+  const [syncDownloadMessage, setSyncDownloadMessage] = useState('')
+  const [syncDownloadError, setSyncDownloadError] = useState('')
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const syncVideoRef = useRef<HTMLVideoElement | null>(null)
+  const syncAudioObjectRef = useRef<HTMLAudioElement | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (syncVideoUrl) URL.revokeObjectURL(syncVideoUrl)
+    }
+  }, [syncVideoUrl])
+
+  useEffect(() => {
+    if (!syncTrack && syncTracks.length > 0) {
+      setSyncTrack(syncTracks[0])
+    }
+  }, [syncTrack, syncTracks])
 
   type LicenseForm = {
     fullName: string
@@ -479,19 +506,109 @@ export default function LibraryPage() {
 
   const openSync = () => {
     setSyncFile(null)
+    if (syncVideoUrl) URL.revokeObjectURL(syncVideoUrl)
+    setSyncVideoUrl('')
     setSyncStage('idle')
+    setSyncTrack(syncTracks[0] ?? null)
+    setSyncPlaying(false)
+    setSyncDownloadMessage('')
+    setSyncDownloadError('')
     setSyncOpen(true)
   }
   const closeSync = () => {
+    syncVideoRef.current?.pause()
+    syncAudioObjectRef.current?.pause()
     setSyncOpen(false)
     setSyncFile(null)
+    if (syncVideoUrl) URL.revokeObjectURL(syncVideoUrl)
+    setSyncVideoUrl('')
     setSyncStage('idle')
+    setSyncPlaying(false)
+    setSyncDownloadMessage('')
+    setSyncDownloadError('')
   }
   const handleSyncFile = (file: File | null) => {
     if (!file) return
+    if (!/^video\//.test(file.type)) {
+      setSyncDownloadError('Please upload an MP4, MOV, or WebM video file.')
+      return
+    }
+    if (syncVideoUrl) URL.revokeObjectURL(syncVideoUrl)
+    const nextUrl = URL.createObjectURL(file)
     setSyncFile(file)
-    setSyncStage('analyzing')
-    setTimeout(() => setSyncStage('ready'), 1600)
+    setSyncVideoUrl(nextUrl)
+    setSyncTrack(syncTrack ?? syncTracks[0] ?? null)
+    setSyncPlaying(false)
+    setSyncDownloadMessage('')
+    setSyncDownloadError('')
+    setSyncStage('ready')
+  }
+  const handleSyncTrackChange = (track: Track) => {
+    syncAudioObjectRef.current?.pause()
+    syncAudioObjectRef.current = null
+    setSyncPlaying(false)
+    setSyncTrack(track)
+    setSyncDownloadMessage('')
+    setSyncDownloadError('')
+  }
+  const toggleSyncPlayback = async () => {
+    const video = syncVideoRef.current
+    if (!video || !syncTrack?.audio_url) return
+
+    if (syncPlaying) {
+      video.pause()
+      syncAudioObjectRef.current?.pause()
+      setSyncPlaying(false)
+      return
+    }
+
+    setSyncDownloadError('')
+    const preview = await getSongPreviewUrl(syncTrack.id).unwrap()
+    const audio = syncAudioObjectRef.current ?? new Audio()
+    syncAudioObjectRef.current = audio
+    if (audio.src !== preview.url) {
+      audio.src = preview.url
+      audio.load()
+    }
+    audio.currentTime = video.currentTime
+    audio.volume = 1
+
+    try {
+      await video.play()
+      await audio.play()
+      setSyncPlaying(true)
+    } catch (error) {
+      video.pause()
+      audio.pause()
+      setSyncPlaying(false)
+      console.error('Synced playback failed', error)
+      setSyncDownloadError('Unable to start synced playback. Try pressing play again.')
+    }
+  }
+  const handleGenerateSyncDownload = async () => {
+    if (!user) {
+      setAuthOpen(true)
+      return
+    }
+    if (user.subscriptionStatus !== 'paid') {
+      setSyncDownloadError('Paid access is required to download synced preview videos.')
+      return
+    }
+    if (!syncFile || !syncTrack) return
+
+    setSyncDownloadMessage('')
+    setSyncDownloadError('')
+
+    try {
+      const preview = await requestVideoSyncPreview({
+        songId: syncTrack.id,
+        video: syncFile,
+      }).unwrap()
+      setSyncDownloadMessage('Your low-resolution preview video is ready. It will open in a new tab.')
+      window.open(preview.downloadUrl, '_blank', 'noopener,noreferrer')
+    } catch (apiError: any) {
+      setSyncDownloadError(apiError?.data?.message ?? 'Unable to generate the video preview')
+    }
   }
   const formatBytes = (b: number) => {
     if (b < 1024) return `${b} B`
@@ -1108,7 +1225,7 @@ export default function LibraryPage() {
             onClick={closeSync}
             aria-hidden="true"
           />
-          <div className="relative w-full max-w-lg rounded-lg border border-[var(--color-border-default)] bg-[var(--color-surface-elevated)] shadow-2xl">
+          <div className="relative w-full max-w-5xl max-h-[92vh] overflow-y-auto rounded-lg border border-[var(--color-border-default)] bg-[var(--color-surface-elevated)] shadow-2xl">
             <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border-subtle)]">
               <div className="flex items-center gap-2.5">
                 <div className="w-7 h-7 rounded-md border border-[var(--color-border-default)] bg-[var(--color-background)] flex items-center justify-center">
@@ -1170,23 +1287,9 @@ export default function LibraryPage() {
                     onChange={(e) => handleSyncFile(e.target.files?.[0] ?? null)}
                   />
                   <p className="mt-4 text-[12px] text-[var(--color-text-tertiary)] text-center">
-                    Nothing leaves your machine — files are processed locally.
+                    Browser preview is local. Upload happens only when paid users request a downloadable preview.
                   </p>
                 </>
-              )}
-
-              {syncStage === 'analyzing' && syncFile && (
-                <div className="py-10 flex flex-col items-center text-center">
-                  <div className="w-10 h-10 rounded-full border border-[var(--color-border-default)] bg-[var(--color-background)] flex items-center justify-center mb-4">
-                    <Loader2 className="w-4 h-4 text-[var(--color-accent)] animate-spin" />
-                  </div>
-                  <div className="text-[13.5px] text-[var(--color-text-primary)]">
-                    Analyzing {syncFile.name}…
-                  </div>
-                  <div className="mt-1 mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-text-tertiary)]">
-                    {formatBytes(syncFile.size)} · detecting tempo & cuts
-                  </div>
-                </div>
               )}
 
               {syncStage === 'ready' && syncFile && (
@@ -1200,43 +1303,165 @@ export default function LibraryPage() {
                         {syncFile.name}
                       </div>
                       <div className="mono text-[11px] text-[var(--color-text-tertiary)]">
-                        {formatBytes(syncFile.size)} · 24 fps · 118 BPM detected
+                        {formatBytes(syncFile.size)} · local preview ready
                       </div>
                     </div>
                   </div>
 
-                  <div className="mt-4">
-                    <div className="mono text-[10px] uppercase tracking-[0.18em] text-[var(--color-text-tertiary)] mb-2">
-                      Sync preview
-                    </div>
-                    <div className="flex items-end gap-[3px] h-12 px-3 py-2 rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-background)]">
-                      {Array.from({ length: 48 }).map((_, i) => {
-                        const h = 25 + Math.abs(Math.sin(i * 0.7) * 65)
-                        return (
-                          <div
-                            key={i}
-                            className="flex-1 rounded-sm bg-[var(--color-accent)]/70"
-                            style={{ height: `${h}%` }}
+                  <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_320px]">
+                    <div>
+                      <div className="relative overflow-hidden rounded-lg border border-[var(--color-border-subtle)] bg-black">
+                        {syncVideoUrl ? (
+                          <video
+                            ref={syncVideoRef}
+                            src={syncVideoUrl}
+                            muted
+                            playsInline
+                            className="aspect-video w-full bg-black object-contain"
+                            onPause={() => {
+                              syncAudioObjectRef.current?.pause()
+                              setSyncPlaying(false)
+                            }}
+                            onEnded={() => {
+                              syncAudioObjectRef.current?.pause()
+                              setSyncPlaying(false)
+                            }}
+                            onSeeked={(event) => {
+                              if (syncAudioObjectRef.current) {
+                                syncAudioObjectRef.current.currentTime = event.currentTarget.currentTime
+                              }
+                            }}
                           />
+                        ) : null}
+                        <button
+                          type="button"
+                          onClick={toggleSyncPlayback}
+                          disabled={!syncTrack?.audio_url || loadingSyncAudio}
+                          className="absolute inset-0 m-auto flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-black/60 text-white backdrop-blur-sm transition hover:bg-black/75 disabled:opacity-50"
+                          aria-label={syncPlaying ? 'Pause synced preview' : 'Play synced preview'}
+                        >
+                          {loadingSyncAudio ? (
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                          ) : syncPlaying ? (
+                            <Pause className="h-5 w-5" />
+                          ) : (
+                            <Play className="ml-0.5 h-5 w-5" />
+                          )}
+                        </button>
+                      </div>
+
+                      <div className="mt-3 rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-background)] px-3 py-2.5">
+                        <div className="text-[12px] text-[var(--color-text-tertiary)]">
+                          Now previewing
+                        </div>
+                        <div className="mt-1 flex items-center justify-between gap-3">
+                          <div className="min-w-0">
+                            <div className="truncate text-[13.5px] font-medium text-[var(--color-text-primary)]">
+                              {syncTrack?.title ?? 'Select a track'}
+                            </div>
+                            <div className="truncate text-[12px] text-[var(--color-text-tertiary)]">
+                              {syncTrack?.artist ?? 'Choose from the track list'}
+                            </div>
+                          </div>
+                          <div className="mono flex-shrink-0 text-[11px] text-[var(--color-text-tertiary)]">
+                            {syncTrack ? formatDuration(syncTrack.duration) : '--:--'}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-background)] p-3">
+                      <div className="mono mb-2 text-[10px] uppercase tracking-[0.18em] text-[var(--color-text-tertiary)]">
+                        Switch music
+                      </div>
+                      <div className="max-h-[340px] space-y-2 overflow-y-auto pr-1">
+                        {syncTracks.length > 0 ? syncTracks.map((track) => {
+                          const active = syncTrack?.id === track.id
+                          return (
+                            <button
+                              key={track.id}
+                              type="button"
+                              onClick={() => handleSyncTrackChange(track)}
+                              className={`flex w-full items-center gap-3 rounded-md border px-2.5 py-2 text-left transition ${
+                                active
+                                  ? 'border-[var(--color-accent)] bg-[var(--color-accent-soft)]'
+                                  : 'border-[var(--color-border-subtle)] bg-[var(--color-surface)] hover:border-[var(--color-border-default)]'
+                              }`}
+                            >
+                              <img
+                                src={track.cover_url}
+                                alt=""
+                                className="h-9 w-9 flex-shrink-0 rounded object-cover"
+                              />
+                              <div className="min-w-0 flex-1">
+                                <div className="truncate text-[12.5px] font-medium text-[var(--color-text-primary)]">
+                                  {track.title}
+                                </div>
+                                <div className="truncate text-[11.5px] text-[var(--color-text-tertiary)]">
+                                  {track.artist}
+                                </div>
+                              </div>
+                              <div className="mono flex-shrink-0 text-[10.5px] text-[var(--color-text-tertiary)]">
+                                {formatDuration(track.duration)}
+                              </div>
+                            </button>
+                          )
+                        }) : (
+                          <div className="rounded-md border border-[var(--color-border-subtle)] px-3 py-4 text-center text-[12px] text-[var(--color-text-tertiary)]">
+                            No previewable tracks are available yet.
+                          </div>
                         )
-                      })}
+                        }
+                      </div>
                     </div>
                   </div>
 
-                  <div className="mt-5 flex items-center justify-between gap-3">
+                  {syncDownloadMessage || syncDownloadError ? (
+                    <div className={`mt-4 rounded-md border px-3 py-2.5 text-[12.5px] ${
+                      syncDownloadError
+                        ? 'border-red-500/25 bg-red-500/10 text-red-200'
+                        : 'border-emerald-500/25 bg-emerald-500/10 text-emerald-200'
+                    }`}>
+                      {syncDownloadError || syncDownloadMessage}
+                    </div>
+                  ) : null}
+
+                  <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
                     <button
                       type="button"
                       onClick={() => {
+                        syncVideoRef.current?.pause()
+                        syncAudioObjectRef.current?.pause()
+                        syncAudioObjectRef.current = null
                         setSyncFile(null)
+                        if (syncVideoUrl) URL.revokeObjectURL(syncVideoUrl)
+                        setSyncVideoUrl('')
                         setSyncStage('idle')
+                        setSyncPlaying(false)
+                        setSyncDownloadMessage('')
+                        setSyncDownloadError('')
                       }}
                       className="text-[12.5px] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] transition-colors"
                     >
                       Upload a different clip
                     </button>
-                    <Button size="sm" onClick={closeSync}>
-                      Browse matching tracks
-                      <ArrowRight className="ml-1.5 w-3.5 h-3.5" />
+                    <Button
+                      size="sm"
+                      onClick={handleGenerateSyncDownload}
+                      disabled={!syncTrack || renderingSyncPreview || user?.subscriptionStatus !== 'paid'}
+                      title={user?.subscriptionStatus === 'paid' ? 'Download low-resolution preview' : 'Paid access required'}
+                    >
+                      {renderingSyncPreview ? (
+                        <>
+                          <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                          Rendering...
+                        </>
+                      ) : (
+                        <>
+                          <Download className="mr-1.5 h-3.5 w-3.5" />
+                          Download low-res preview
+                        </>
+                      )}
                     </Button>
                   </div>
                 </>

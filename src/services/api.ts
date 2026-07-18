@@ -234,6 +234,23 @@ export const api = createApi({
       }),
       transformResponse: (response: { data: { downloadUrl: string; fileType: string; expiresIn: number } }) => response.data,
     }),
+    requestVideoSyncPreview: builder.mutation({
+      query: ({ songId, video }: { songId: string; video: File }) => {
+        const body = new FormData()
+        body.append('songId', songId)
+        body.append('video', video)
+        return {
+          url: '/video-sync/preview-download',
+          method: 'POST',
+          body,
+        }
+      },
+      transformResponse: (response: { data: { downloadUrl: string; fileType: string; expiresIn: number; generatedKey: string } }) => response.data,
+    }),
+    getSongPreviewUrl: builder.mutation({
+      query: (songId: string) => `/songs/${songId}/preview-url`,
+      transformResponse: (response: { data: { url: string; fileType: string; expiresIn: number } }) => response.data,
+    }),
     createAccessRequest: builder.mutation({
       query: (body: {
         requestedPlan: 'standard' | 'premium' | 'custom'
@@ -268,6 +285,8 @@ export const {
   useSearchSongsQuery,
   useRequestLicenseMutation,
   useRequestDownloadMutation,
+  useRequestVideoSyncPreviewMutation,
+  useGetSongPreviewUrlMutation,
   useCreateAccessRequestMutation,
   useGetMyPlaylistsQuery,
 } = api
